@@ -1,0 +1,608 @@
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useResume } from '../context/ResumeContext';
+import PersonalInfoForm from '../components/forms/PersonalInfoForm';
+import ExperienceForm from '../components/forms/ExperienceForm';
+import EducationForm from '../components/forms/EducationForm';
+import SkillsForm from '../components/forms/SkillsForm';
+import ProjectsForm from '../components/forms/ProjectsForm';
+import CertificationsForm from '../components/forms/CertificationsForm';
+import LanguagesForm from '../components/forms/LanguagesForm';
+
+// Import all templates
+import ModernTemplate from '../components/templates/ModernTemplate';
+import ClassicTemplate from '../components/templates/ClassicTemplate';
+import ProfessionalTemplate from '../components/templates/ProfessionalTemplate';
+import CreativeTemplate from '../components/templates/CreativeTemplate';
+import MinimalTemplate from '../components/templates/MinimalTemplate';
+import ExecutiveTemplate from '../components/templates/ExecutiveTemplate';
+import TechnicalTemplate from '../components/templates/TechnicalTemplate';
+import DesignerTemplate from '../components/templates/DesignerTemplate';
+import AcademicTemplate from '../components/templates/AcademicTemplate';
+import SimpleTemplate from '../components/templates/SimpleTemplate';
+import ElegantTemplate from '../components/templates/ElegantTemplate';
+import BoldTemplate from '../components/templates/BoldTemplate';
+import CompactTemplate from '../components/templates/CompactTemplate';
+import StylishTemplate from '../components/templates/StylishTemplate';
+import CorporateTemplate from '../components/templates/CorporateTemplate';
+
+const templateComponents = {
+  modern: ModernTemplate,
+  classic: ClassicTemplate,
+  professional: ProfessionalTemplate,
+  creative: CreativeTemplate,
+  minimal: MinimalTemplate,
+  executive: ExecutiveTemplate,
+  technical: TechnicalTemplate,
+  designer: DesignerTemplate,
+  academic: AcademicTemplate,
+  simple: SimpleTemplate,
+  elegant: ElegantTemplate,
+  bold: BoldTemplate,
+  compact: CompactTemplate,
+  stylish: StylishTemplate,
+  corporate: CorporateTemplate
+};
+
+const ResumeEditor = () => {
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { fetchResume, createResume, updateResume, currentResume } = useResume();
+  
+  const [activeSection, setActiveSection] = useState('personal');
+  const [saving, setSaving] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
+  const previewRef = useRef();
+  const [resumeData, setResumeData] = useState({
+    title: 'My Resume',
+    template: 'modern',
+    colors: {
+      primary: '#3B82F6',    // Header/accent color
+      text: '#1F2937',       // Main text color
+      secondary: '#6B7280'   // Secondary/footer text
+    },
+    personalInfo: {
+      fullName: '',
+      email: '',
+      phone: '',
+      location: '',
+      website: '',
+      linkedin: '',
+      github: '',
+      summary: ''
+    },
+    experience: [],
+    education: [],
+    skills: [],
+    projects: [],
+    certifications: [],
+    languages: []
+  });
+
+  useEffect(() => {
+    if (id) {
+      fetchResume(id).then((result) => {
+        if (result.success && result.data) {
+          // Ensure colors exist in the data
+          const dataWithColors = {
+            ...result.data,
+            colors: result.data.colors || {
+              primary: '#3B82F6',
+              text: '#1F2937',
+              secondary: '#6B7280'
+            }
+          };
+          setResumeData(dataWithColors);
+        }
+      });
+    } else {
+      // Check for template query parameter
+      const templateParam = searchParams.get('template');
+      if (templateParam) {
+        setResumeData(prev => ({ ...prev, template: templateParam }));
+      }
+    }
+  }, [id, searchParams, fetchResume]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    let result;
+    if (id) {
+      result = await updateResume(id, resumeData);
+    } else {
+      result = await createResume(resumeData);
+    }
+    setSaving(false);
+    
+    if (result.success) {
+      if (!id) {
+        navigate(`/editor/${result.data._id}`);
+      }
+    }
+  };
+
+  const updateField = (section, data) => {
+    setResumeData(prev => ({
+      ...prev,
+      [section]: data
+    }));
+  };
+
+  const sections = [
+    { id: 'personal', label: 'Personal Info', icon: '👤' },
+    { id: 'experience', label: 'Experience', icon: '💼' },
+    { id: 'education', label: 'Education', icon: '🎓' },
+    { id: 'skills', label: 'Skills', icon: '⚡' },
+    { id: 'projects', label: 'Projects', icon: '🚀' },
+    { id: 'certifications', label: 'Certifications', icon: '📜' },
+    { id: 'languages', label: 'Languages', icon: '🌐' },
+    { id: 'colors', label: 'Colors', icon: '🎨' }
+  ];
+
+  const templates = [
+    { id: 'modern', name: 'Modern', color: 'from-blue-500 to-blue-600' },
+    { id: 'classic', name: 'Classic', color: 'from-gray-700 to-gray-800' },
+    { id: 'professional', name: 'Professional', color: 'from-indigo-500 to-indigo-600' },
+    { id: 'creative', name: 'Creative', color: 'from-purple-500 to-pink-500' },
+    { id: 'minimal', name: 'Minimal', color: 'from-slate-500 to-slate-600' },
+    { id: 'executive', name: 'Executive', color: 'from-amber-600 to-amber-700' },
+    { id: 'technical', name: 'Technical', color: 'from-green-500 to-green-600' },
+    { id: 'designer', name: 'Designer', color: 'from-fuchsia-500 to-fuchsia-600' },
+    { id: 'academic', name: 'Academic', color: 'from-blue-700 to-blue-800' },
+    { id: 'simple', name: 'Simple', color: 'from-gray-500 to-gray-600' },
+    { id: 'elegant', name: 'Elegant', color: 'from-rose-500 to-rose-600' },
+    { id: 'bold', name: 'Bold', color: 'from-red-500 to-red-600' },
+    { id: 'compact', name: 'Compact', color: 'from-teal-500 to-teal-600' },
+    { id: 'stylish', name: 'Stylish', color: 'from-violet-500 to-violet-600' },
+    { id: 'corporate', name: 'Corporate', color: 'from-cyan-600 to-cyan-700' }
+  ];
+
+  const TemplateComponent = templateComponents[resumeData.template] || ModernTemplate;
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="w-full px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="text-gray-600 hover:text-gray-900 flex items-center gap-1 sm:gap-2 transition-colors text-sm sm:text-base"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span className="hidden sm:inline">Back</span>
+              </button>
+              <div className="h-6 w-px bg-gray-300 hidden sm:block"></div>
+              <input
+                type="text"
+                value={resumeData.title}
+                onChange={(e) => setResumeData(prev => ({ ...prev, title: e.target.value }))}
+                className="text-base sm:text-xl font-bold text-gray-900 border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 outline-none px-1 sm:px-2 py-1 transition-colors flex-1 sm:flex-initial"
+                placeholder="Resume Title"
+              />
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <button
+                onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+                className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-sm"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
+                </svg>
+                <span className="hidden sm:inline">Templates</span>
+              </button>
+              <button
+                onClick={() => setShowPreview(!showPreview)}
+                className={`hidden lg:flex px-3 sm:px-4 py-2 rounded-lg transition-colors items-center gap-2 text-sm ${
+                  showPreview 
+                    ? 'bg-blue-100 text-blue-700' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {showPreview ? 'Hide Preview' : 'Show Preview'}
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex-1 sm:flex-initial px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium text-sm"
+              >
+                {saving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile Preview Button - Fixed at bottom */}
+        <button
+          onClick={() => navigate(`/preview/${id || 'new'}`)}
+          className="lg:hidden fixed bottom-6 right-4 bg-blue-600 text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 transition-all z-30 flex items-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </button>
+      </header>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Templates Drawer Overlay (Mobile) */}
+        {isDrawerOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setIsDrawerOpen(false)}
+          />
+        )}
+
+        {/* Templates Drawer */}
+        <div 
+          className={`bg-white border-r border-gray-200 transition-all duration-300 z-50 lg:z-auto ${
+            isDrawerOpen ? 'w-64 lg:w-64' : 'w-0'
+          } overflow-hidden fixed lg:relative inset-y-0 left-0 shadow-xl lg:shadow-none`}
+        >
+          <div className="h-full overflow-y-auto p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900">Templates</h3>
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-3">
+              {templates.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => {
+                    setResumeData(prev => ({ ...prev, template: template.id }));
+                    setIsDrawerOpen(false); // Close drawer on mobile after selection
+                  }}
+                  className={`w-full text-left rounded-lg overflow-hidden transition-all ${
+                    resumeData.template === template.id
+                      ? 'ring-2 ring-blue-500 shadow-lg'
+                      : 'hover:shadow-md'
+                  }`}
+                >
+                  <div className={`h-20 bg-gradient-to-br ${template.color} flex items-center justify-center`}>
+                    <div className="text-white font-bold text-lg">{template.name.charAt(0)}</div>
+                  </div>
+                  <div className="p-2 bg-white">
+                    <p className="text-sm font-medium text-gray-900">{template.name}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Form Editor Section */}
+        <div className={`flex-1 overflow-y-auto ${showPreview ? 'hidden lg:block lg:w-1/2' : 'w-full'}`}>
+          <div className="p-6">
+            {/* Section Navigation Pills */}
+            <div className="mb-4 sm:mb-6 flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+              {sections.map(section => (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-sm sm:text-base ${
+                    activeSection === section.id
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                  }`}
+                >
+                  <span className="text-base sm:text-lg">{section.icon}</span>
+                  <span className="font-medium">{section.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Form Content */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+              {activeSection === 'personal' && (
+                <PersonalInfoForm
+                  data={resumeData.personalInfo}
+                  onChange={(data) => updateField('personalInfo', data)}
+                />
+              )}
+              {activeSection === 'experience' && (
+                <ExperienceForm
+                  data={resumeData.experience}
+                  onChange={(data) => updateField('experience', data)}
+                />
+              )}
+              {activeSection === 'education' && (
+                <EducationForm
+                  data={resumeData.education}
+                  onChange={(data) => updateField('education', data)}
+                />
+              )}
+              {activeSection === 'skills' && (
+                <SkillsForm
+                  data={resumeData.skills}
+                  onChange={(data) => updateField('skills', data)}
+                />
+              )}
+              {activeSection === 'projects' && (
+                <ProjectsForm
+                  data={resumeData.projects}
+                  onChange={(data) => updateField('projects', data)}
+                />
+              )}
+              {activeSection === 'certifications' && (
+                <CertificationsForm
+                  data={resumeData.certifications}
+                  onChange={(data) => updateField('certifications', data)}
+                />
+              )}
+              {activeSection === 'languages' && (
+                <LanguagesForm
+                  data={resumeData.languages}
+                  onChange={(data) => updateField('languages', data)}
+                />
+              )}
+              {activeSection === 'colors' && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Customize Colors</h2>
+                  <p className="text-gray-600 mb-6">Personalize your resume with custom colors</p>
+                  
+                  <div className="space-y-6">
+                    {/* Primary Color */}
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                      <label className="block text-sm font-semibold text-gray-900 mb-3">
+                        Primary Color (Headers & Accents)
+                      </label>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Used for section headers, titles, and accent elements
+                      </p>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="color"
+                          value={resumeData.colors.primary}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            colors: { ...prev.colors, primary: e.target.value }
+                          }))}
+                          className="w-20 h-20 rounded-lg border-2 border-gray-300 cursor-pointer"
+                        />
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={resumeData.colors.primary}
+                            onChange={(e) => setResumeData(prev => ({
+                              ...prev,
+                              colors: { ...prev.colors, primary: e.target.value }
+                            }))}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-mono"
+                            placeholder="#3B82F6"
+                          />
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, primary: '#3B82F6' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                              Blue
+                            </button>
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, primary: '#10B981' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                            >
+                              Green
+                            </button>
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, primary: '#8B5CF6' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-purple-500 text-white rounded hover:bg-purple-600"
+                            >
+                              Purple
+                            </button>
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, primary: '#EF4444' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                            >
+                              Red
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Text Color */}
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                      <label className="block text-sm font-semibold text-gray-900 mb-3">
+                        Text Color (Main Content)
+                      </label>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Used for body text, descriptions, and main content
+                      </p>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="color"
+                          value={resumeData.colors.text}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            colors: { ...prev.colors, text: e.target.value }
+                          }))}
+                          className="w-20 h-20 rounded-lg border-2 border-gray-300 cursor-pointer"
+                        />
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={resumeData.colors.text}
+                            onChange={(e) => setResumeData(prev => ({
+                              ...prev,
+                              colors: { ...prev.colors, text: e.target.value }
+                            }))}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-mono"
+                            placeholder="#1F2937"
+                          />
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, text: '#000000' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-black text-white rounded hover:bg-gray-800"
+                            >
+                              Black
+                            </button>
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, text: '#1F2937' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-gray-800 text-white rounded hover:bg-gray-700"
+                            >
+                              Dark Gray
+                            </button>
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, text: '#374151' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-gray-700 text-white rounded hover:bg-gray-600"
+                            >
+                              Gray
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Secondary Color */}
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                      <label className="block text-sm font-semibold text-gray-900 mb-3">
+                        Secondary Color (Subtitles & Details)
+                      </label>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Used for dates, locations, and secondary information
+                      </p>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="color"
+                          value={resumeData.colors.secondary}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            colors: { ...prev.colors, secondary: e.target.value }
+                          }))}
+                          className="w-20 h-20 rounded-lg border-2 border-gray-300 cursor-pointer"
+                        />
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={resumeData.colors.secondary}
+                            onChange={(e) => setResumeData(prev => ({
+                              ...prev,
+                              colors: { ...prev.colors, secondary: e.target.value }
+                            }))}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-mono"
+                            placeholder="#6B7280"
+                          />
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, secondary: '#6B7280' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                            >
+                              Gray
+                            </button>
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, secondary: '#9CA3AF' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-gray-400 text-white rounded hover:bg-gray-500"
+                            >
+                              Light Gray
+                            </button>
+                            <button
+                              onClick={() => setResumeData(prev => ({
+                                ...prev,
+                                colors: { ...prev.colors, secondary: '#4B5563' }
+                              }))}
+                              className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
+                            >
+                              Dark Gray
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Reset Button */}
+                    <div className="pt-4 border-t border-gray-300">
+                      <button
+                        onClick={() => setResumeData(prev => ({
+                          ...prev,
+                          colors: {
+                            primary: '#3B82F6',
+                            text: '#1F2937',
+                            secondary: '#6B7280'
+                          }
+                        }))}
+                        className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                      >
+                        Reset to Default Colors
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Live Preview Section */}
+        {showPreview && (
+          <div className="hidden lg:block lg:w-1/2 border-l border-gray-200 bg-gray-100 overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 z-10">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Live Preview
+              </h3>
+            </div>
+            <div className="p-6 flex justify-center items-start">
+              <div 
+                ref={previewRef}
+                className="bg-white shadow-2xl w-full max-w-[210mm]"
+                style={{
+                  minHeight: '297mm',
+                  transform: 'scale(0.85)',
+                  transformOrigin: 'top center'
+                }}
+              >
+                <TemplateComponent data={resumeData} />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ResumeEditor;
+
