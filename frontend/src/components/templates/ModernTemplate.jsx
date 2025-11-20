@@ -6,7 +6,7 @@ const ModernTemplate = ({ data }) => {
   };
 
   return (
-    <div className="bg-white shadow-lg" style={{ width: '210mm', minHeight: '297mm', padding: '15mm 20mm' }}>
+    <div className="bg-white" style={{ width: '210mm', minHeight: '297mm', padding: '15mm 20mm', boxSizing: 'border-box', margin: 0 }}>
       {/* Header */}
       <header className="pb-4 sm:pb-6 mb-4 sm:mb-6" style={{ borderBottom: `4px solid ${colors.primary}` }}>
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2" style={{ color: colors.text }}>

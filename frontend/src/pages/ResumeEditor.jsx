@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useResume } from '../context/ResumeContext';
+import { useAuth } from '../context/AuthContext';
 import PersonalInfoForm from '../components/forms/PersonalInfoForm';
 import ExperienceForm from '../components/forms/ExperienceForm';
 import EducationForm from '../components/forms/EducationForm';
@@ -25,6 +26,11 @@ import BoldTemplate from '../components/templates/BoldTemplate';
 import CompactTemplate from '../components/templates/CompactTemplate';
 import StylishTemplate from '../components/templates/StylishTemplate';
 import CorporateTemplate from '../components/templates/CorporateTemplate';
+import TimelineTemplate from '../components/templates/TimelineTemplate';
+import TwoColumnTemplate from '../components/templates/TwoColumnTemplate';
+import ColorfulTemplate from '../components/templates/ColorfulTemplate';
+import StartupTemplate from '../components/templates/StartupTemplate';
+import FinanceTemplate from '../components/templates/FinanceTemplate';
 
 const templateComponents = {
   modern: ModernTemplate,
@@ -41,7 +47,12 @@ const templateComponents = {
   bold: BoldTemplate,
   compact: CompactTemplate,
   stylish: StylishTemplate,
-  corporate: CorporateTemplate
+  corporate: CorporateTemplate,
+  timeline: TimelineTemplate,
+  twocolumn: TwoColumnTemplate,
+  colorful: ColorfulTemplate,
+  startup: StartupTemplate,
+  finance: FinanceTemplate
 };
 
 const ResumeEditor = () => {
@@ -49,12 +60,15 @@ const ResumeEditor = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { fetchResume, createResume, updateResume, currentResume } = useResume();
+  const { user } = useAuth();
   
   const [activeSection, setActiveSection] = useState('personal');
   const [saving, setSaving] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
+  const [pages, setPages] = useState([0]);
   const previewRef = useRef();
+  const contentRef = useRef();
   const [resumeData, setResumeData] = useState({
     title: 'My Resume',
     template: 'modern',
@@ -82,29 +96,126 @@ const ResumeEditor = () => {
   });
 
   useEffect(() => {
+    console.log('ResumeEditor useEffect triggered, id:', id);
+    
     if (id) {
-      fetchResume(id).then((result) => {
-        if (result.success && result.data) {
-          // Ensure colors exist in the data
-          const dataWithColors = {
-            ...result.data,
-            colors: result.data.colors || {
-              primary: '#3B82F6',
-              text: '#1F2937',
-              secondary: '#6B7280'
-            }
-          };
-          setResumeData(dataWithColors);
+      // Small delay to ensure localStorage is ready
+      const loadResume = async () => {
+        try {
+          // Wait a bit to ensure context is initialized
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          console.log('Loading resume with id:', id);
+          const result = await fetchResume(id);
+          console.log('Fetch result:', result);
+          
+          if (result.success && result.data) {
+            console.log('Resume data loaded:', result.data);
+            // Ensure colors exist in the data
+            const dataWithColors = {
+              ...result.data,
+              colors: result.data.colors || {
+                primary: '#3B82F6',
+                text: '#1F2937',
+                secondary: '#6B7280'
+              }
+            };
+            setResumeData(dataWithColors);
+            console.log('Resume data set in state');
+          } else {
+            console.error('Failed to load resume:', result.message);
+            // Don't navigate immediately - maybe the resume just needs to be created
+            // Show an error or allow user to create new
+          }
+        } catch (error) {
+          console.error('Error loading resume:', error);
         }
-      });
+      };
+      loadResume();
     } else {
+      // Reset to default when no id (new resume)
+      const defaultColors = {
+        primary: '#3B82F6',
+        text: '#1F2937',
+        secondary: '#6B7280'
+      };
+
+      // Check for colors query parameter
+      const colorsParam = searchParams.get('colors');
+      let colors = defaultColors;
+      if (colorsParam) {
+        try {
+          colors = JSON.parse(decodeURIComponent(colorsParam));
+        } catch (e) {
+          console.error('Error parsing colors:', e);
+        }
+      }
+
+      setResumeData({
+        title: 'My Resume',
+        template: 'modern',
+        colors: colors,
+        personalInfo: {
+          fullName: '',
+          email: '',
+          phone: '',
+          location: '',
+          website: '',
+          linkedin: '',
+          github: '',
+          summary: ''
+        },
+        experience: [],
+        education: [],
+        skills: [],
+        projects: [],
+        certifications: [],
+        languages: []
+      });
+      
       // Check for template query parameter
       const templateParam = searchParams.get('template');
       if (templateParam) {
-        setResumeData(prev => ({ ...prev, template: templateParam }));
+        setResumeData(prev => ({ ...prev, template: templateParam, colors: colors }));
       }
     }
-  }, [id, searchParams, fetchResume]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, searchParams]);
+
+  // Calculate pages based on content height
+  useEffect(() => {
+    if (contentRef.current && resumeData) {
+      const calculatePages = () => {
+        // Get the actual rendered height of the content
+        const contentElement = contentRef.current;
+        const contentHeight = contentElement.scrollHeight;
+        
+        // Convert 297mm (A4 height) to pixels
+        // At 96 DPI: 1mm = 3.779527559 pixels
+        const mmToPx = 3.779527559; // 1mm in pixels at 96 DPI
+        const a4HeightInPx = 297 * mmToPx; // ~1122.52px
+        
+        // Calculate number of pages needed
+        const numPages = Math.ceil(contentHeight / a4HeightInPx);
+        
+        setPages(Array.from({ length: Math.max(1, numPages) }, (_, i) => i));
+      };
+      
+      // Wait for content to render, then recalculate on resize
+      const timeoutId = setTimeout(calculatePages, 200);
+      
+      // Recalculate on window resize
+      const handleResize = () => {
+        setTimeout(calculatePages, 100);
+      };
+      window.addEventListener('resize', handleResize);
+      
+      return () => {
+        clearTimeout(timeoutId);
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, [resumeData]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -156,7 +267,12 @@ const ResumeEditor = () => {
     { id: 'bold', name: 'Bold', color: 'from-red-500 to-red-600' },
     { id: 'compact', name: 'Compact', color: 'from-teal-500 to-teal-600' },
     { id: 'stylish', name: 'Stylish', color: 'from-violet-500 to-violet-600' },
-    { id: 'corporate', name: 'Corporate', color: 'from-cyan-600 to-cyan-700' }
+    { id: 'corporate', name: 'Corporate', color: 'from-cyan-600 to-cyan-700' },
+    { id: 'timeline', name: 'Timeline', color: 'from-blue-600 to-indigo-600' },
+    { id: 'twocolumn', name: 'Two Column', color: 'from-purple-600 to-pink-600' },
+    { id: 'colorful', name: 'Colorful', color: 'from-rainbow-500 to-rainbow-600' },
+    { id: 'startup', name: 'Startup', color: 'from-orange-500 to-red-500' },
+    { id: 'finance', name: 'Finance', color: 'from-gray-800 to-gray-900' }
   ];
 
   const TemplateComponent = templateComponents[resumeData.template] || ModernTemplate;
@@ -164,32 +280,48 @@ const ResumeEditor = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="w-full px-6 py-3 sm:py-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="text-gray-600 hover:text-gray-900 flex items-center gap-1 sm:gap-2 transition-colors text-sm sm:text-base"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 sticky top-0 z-10 shadow-lg">
+        <div className="w-full px-6">
+          <div className="flex justify-between items-center h-16 sm:h-20">
+            {/* Left Side - Logo & Title */}
+            <div className="flex items-center gap-3 sm:gap-6 flex-1 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="flex items-center gap-1 sm:gap-2 text-white hover:text-blue-100 transition-colors"
+                >
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  <span className="font-medium text-sm sm:text-base hidden sm:inline">Back</span>
+                </button>
+                <div className="h-6 sm:h-8 w-px bg-white/20 hidden sm:block"></div>
+                <input
+                  type="text"
+                  value={resumeData.title}
+                  onChange={(e) => setResumeData(prev => ({ ...prev, title: e.target.value }))}
+                  className="text-base sm:text-xl font-bold text-white bg-transparent border-b-2 border-transparent hover:border-white/50 focus:border-white outline-none px-1 sm:px-2 py-1 transition-colors flex-1 min-w-0 placeholder:text-white/70"
+                  placeholder="Resume Title"
+                />
+              </div>
+              
+              <div className="hidden lg:flex h-10 w-px bg-white/20"></div>
+              
+              <div className="hidden lg:flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                <span className="hidden sm:inline">Back</span>
-              </button>
-              <div className="h-6 w-px bg-gray-300 hidden sm:block"></div>
-              <input
-                type="text"
-                value={resumeData.title}
-                onChange={(e) => setResumeData(prev => ({ ...prev, title: e.target.value }))}
-                className="text-base sm:text-xl font-bold text-gray-900 border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 outline-none px-1 sm:px-2 py-1 transition-colors flex-1 sm:flex-initial"
-                placeholder="Resume Title"
-              />
+                <span className="text-sm font-medium text-white">
+                  Welcome, <span className="font-bold">{user?.name}</span> 👋
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+
+            {/* Right Side - Actions */}
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-                className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-sm"
+                className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all border border-white/20"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
@@ -198,18 +330,19 @@ const ResumeEditor = () => {
               </button>
               <button
                 onClick={() => setShowPreview(!showPreview)}
-                className={`hidden lg:flex px-3 sm:px-4 py-2 rounded-lg transition-colors items-center gap-2 text-sm ${
+                className={`hidden lg:flex px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-colors items-center gap-2 text-xs sm:text-sm font-medium ${
                   showPreview 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-white/20 text-white border border-white/30' 
+                    : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
                 }`}
               >
                 {showPreview ? 'Hide Preview' : 'Show Preview'}
               </button>
+              <div className="h-6 sm:h-8 w-px bg-white/20 hidden sm:block"></div>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 sm:flex-initial px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium text-sm"
+                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50 font-medium text-xs sm:text-sm shadow-lg"
               >
                 {saving ? 'Saving...' : 'Save'}
               </button>
@@ -582,20 +715,73 @@ const ResumeEditor = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
                 Live Preview
+                {pages.length > 1 && (
+                  <span className="ml-auto text-xs text-gray-500 font-normal">
+                    {pages.length} page{pages.length !== 1 ? 's' : ''}
+                  </span>
+                )}
               </h3>
             </div>
-            <div className="p-6 flex justify-center items-start">
+            <div className="p-6 flex justify-center items-start gap-4 flex-wrap">
+              {/* Hidden full content for height calculation */}
               <div 
-                ref={previewRef}
-                className="bg-white shadow-2xl w-full max-w-[210mm]"
-                style={{
-                  minHeight: '297mm',
-                  transform: 'scale(0.85)',
-                  transformOrigin: 'top center'
+                ref={contentRef}
+                style={{ 
+                  position: 'absolute',
+                  left: '-9999px',
+                  top: '0',
+                  width: '210mm',
+                  visibility: 'hidden',
+                  backgroundColor: '#ffffff'
                 }}
               >
                 <TemplateComponent data={resumeData} />
               </div>
+
+              {/* Visible paginated preview */}
+              {pages.map((pageNum) => {
+                // Calculate the offset for this page in pixels
+                const mmToPx = 3.779527559;
+                const pageHeightInPx = 297 * mmToPx;
+                const offsetInPx = pageNum * pageHeightInPx;
+                
+                return (
+                  <div
+                    key={pageNum}
+                    ref={pageNum === 0 ? previewRef : null}
+                    className="bg-white shadow-2xl"
+                    style={{
+                      width: '210mm',
+                      height: '297mm',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      transform: 'scale(0.85)',
+                      transformOrigin: 'top center',
+                      boxSizing: 'border-box',
+                      pageBreakAfter: 'always'
+                    }}
+                  >
+                    <div
+                      style={{
+                        transform: `translateY(-${offsetInPx}px)`,
+                        width: '210mm',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0
+                      }}
+                    >
+                      <TemplateComponent data={resumeData} />
+                    </div>
+                    
+                    {/* Page number indicator */}
+                    {pages.length > 1 && (
+                      <div className="absolute bottom-2 right-2 bg-gray-800 text-white px-2 py-1 rounded-full text-xs font-medium shadow-lg z-10">
+                        Page {pageNum + 1} of {pages.length}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

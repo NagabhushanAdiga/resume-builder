@@ -28,12 +28,12 @@ const Login = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Animated Background */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 relative overflow-hidden">
         {/* Animated Circles */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
         </div>
 
         {/* Content */}
@@ -46,21 +46,21 @@ const Login = () => {
               </svg>
             </div>
             <h1 className="text-5xl font-bold mb-4">Resume Builder</h1>
-            <p className="text-xl text-blue-100 mb-8">
+            <p className="text-xl text-pink-100 mb-8">
               Create professional resumes in minutes with our easy-to-use builder
             </p>
             <div className="flex justify-center gap-8 text-sm">
               <div className="text-center">
                 <div className="text-3xl font-bold mb-1">15+</div>
-                <div className="text-blue-200">Templates</div>
+                <div className="text-pink-200">Templates</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold mb-1">∞</div>
-                <div className="text-blue-200">Customization</div>
+                <div className="text-pink-200">Customization</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold mb-1">PDF</div>
-                <div className="text-blue-200">Export</div>
+                <div className="text-pink-200">Export</div>
               </div>
             </div>
           </div>
@@ -79,9 +79,9 @@ const Login = () => {
           </div>
 
           {/* Demo Credentials */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm font-medium text-blue-900 mb-2">Demo Credentials:</p>
-            <div className="text-xs text-blue-700 space-y-1">
+          <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+            <p className="text-sm font-medium text-purple-900 mb-2">Demo Credentials:</p>
+            <div className="text-xs text-purple-700 space-y-1">
               <p><span className="font-semibold">Email:</span> demo@example.com</p>
               <p><span className="font-semibold">Password:</span> demo123</p>
             </div>
@@ -113,7 +113,7 @@ const Login = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                   placeholder="you@example.com"
                 />
               </div>
@@ -135,7 +135,7 @@ const Login = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                   placeholder="••••••••"
                 />
               </div>
@@ -144,7 +144,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] font-semibold shadow-lg"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] font-semibold shadow-lg"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -163,7 +163,7 @@ const Login = () => {
           <div className="mt-8 text-center">
             <p className="text-gray-600">
               Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline">
+              <Link to="/register" className="text-purple-600 hover:text-purple-700 font-semibold hover:underline">
                 Sign up
               </Link>
             </p>

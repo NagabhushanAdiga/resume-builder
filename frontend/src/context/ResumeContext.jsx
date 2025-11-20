@@ -52,7 +52,13 @@ export const ResumeProvider = ({ children }) => {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (user) {
       const userResumes = JSON.parse(localStorage.getItem(`resumes_${user._id}`) || '[]');
-      const resume = userResumes.find(r => r._id === id);
+      console.log('Fetching resume with id:', id, 'Type:', typeof id);
+      console.log('Available resumes:', userResumes.map(r => ({ id: r._id, type: typeof r._id, title: r.title })));
+      
+      // Convert both to strings for comparison to handle type mismatches
+      const resume = userResumes.find(r => String(r._id) === String(id));
+      console.log('Found resume:', resume ? 'Yes' : 'No');
+      
       if (resume) {
         setCurrentResume(resume);
         setLoading(false);
@@ -98,13 +104,13 @@ export const ResumeProvider = ({ children }) => {
     if (user) {
       const userResumes = JSON.parse(localStorage.getItem(`resumes_${user._id}`) || '[]');
       const updatedResumes = userResumes.map(r => 
-        r._id === id ? { ...resumeData, _id: id, updatedAt: new Date() } : r
+        String(r._id) === String(id) ? { ...resumeData, _id: id, updatedAt: new Date() } : r
       );
       
       localStorage.setItem(`resumes_${user._id}`, JSON.stringify(updatedResumes));
       setResumes(updatedResumes);
       
-      const updatedResume = updatedResumes.find(r => r._id === id);
+      const updatedResume = updatedResumes.find(r => String(r._id) === String(id));
       setCurrentResume(updatedResume);
       
       setLoading(false);
@@ -122,7 +128,7 @@ export const ResumeProvider = ({ children }) => {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (user) {
       const userResumes = JSON.parse(localStorage.getItem(`resumes_${user._id}`) || '[]');
-      const updatedResumes = userResumes.filter(r => r._id !== id);
+      const updatedResumes = userResumes.filter(r => String(r._id) !== String(id));
       localStorage.setItem(`resumes_${user._id}`, JSON.stringify(updatedResumes));
       setResumes(updatedResumes);
       
@@ -141,7 +147,7 @@ export const ResumeProvider = ({ children }) => {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (user) {
       const userResumes = JSON.parse(localStorage.getItem(`resumes_${user._id}`) || '[]');
-      const resumeToDuplicate = userResumes.find(r => r._id === id);
+      const resumeToDuplicate = userResumes.find(r => String(r._id) === String(id));
       
       if (resumeToDuplicate) {
         const duplicatedResume = {
