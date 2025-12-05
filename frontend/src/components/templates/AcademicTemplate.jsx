@@ -116,8 +116,8 @@ const AcademicTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default AcademicTemplate;
+export default AcademicTemplate
 

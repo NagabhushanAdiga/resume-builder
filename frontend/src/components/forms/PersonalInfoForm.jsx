@@ -1,7 +1,7 @@
 const PersonalInfoForm = ({ data, onChange }) => {
   const handleChange = (field, value) => {
-    onChange({ ...data, [field]: value });
-  };
+    onChange({ ...data, [field]: value })
+  }
 
   return (
     <div className="space-y-6">
@@ -113,8 +113,8 @@ const PersonalInfoForm = ({ data, onChange }) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PersonalInfoForm;
+export default PersonalInfoForm
 

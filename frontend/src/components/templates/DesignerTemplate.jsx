@@ -106,8 +106,8 @@ const DesignerTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default DesignerTemplate;
+export default DesignerTemplate
 

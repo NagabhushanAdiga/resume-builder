@@ -105,8 +105,8 @@ const CorporateTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default CorporateTemplate;
+export default CorporateTemplate
 

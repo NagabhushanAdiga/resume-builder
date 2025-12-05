@@ -1,29 +1,29 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { defaultResumeData, sampleResumes } from '../data/mockData';
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { defaultResumeData, sampleResumes } from '../data/mockData'
 
 // Import all templates
-import ModernTemplate from '../components/templates/ModernTemplate';
-import ClassicTemplate from '../components/templates/ClassicTemplate';
-import ProfessionalTemplate from '../components/templates/ProfessionalTemplate';
-import CreativeTemplate from '../components/templates/CreativeTemplate';
-import MinimalTemplate from '../components/templates/MinimalTemplate';
-import ExecutiveTemplate from '../components/templates/ExecutiveTemplate';
-import TechnicalTemplate from '../components/templates/TechnicalTemplate';
-import DesignerTemplate from '../components/templates/DesignerTemplate';
-import AcademicTemplate from '../components/templates/AcademicTemplate';
-import SimpleTemplate from '../components/templates/SimpleTemplate';
-import ElegantTemplate from '../components/templates/ElegantTemplate';
-import BoldTemplate from '../components/templates/BoldTemplate';
-import CompactTemplate from '../components/templates/CompactTemplate';
-import StylishTemplate from '../components/templates/StylishTemplate';
-import CorporateTemplate from '../components/templates/CorporateTemplate';
-import TimelineTemplate from '../components/templates/TimelineTemplate';
-import TwoColumnTemplate from '../components/templates/TwoColumnTemplate';
-import ColorfulTemplate from '../components/templates/ColorfulTemplate';
-import StartupTemplate from '../components/templates/StartupTemplate';
-import FinanceTemplate from '../components/templates/FinanceTemplate';
+import ModernTemplate from '../components/templates/ModernTemplate'
+import ClassicTemplate from '../components/templates/ClassicTemplate'
+import ProfessionalTemplate from '../components/templates/ProfessionalTemplate'
+import CreativeTemplate from '../components/templates/CreativeTemplate'
+import MinimalTemplate from '../components/templates/MinimalTemplate'
+import ExecutiveTemplate from '../components/templates/ExecutiveTemplate'
+import TechnicalTemplate from '../components/templates/TechnicalTemplate'
+import DesignerTemplate from '../components/templates/DesignerTemplate'
+import AcademicTemplate from '../components/templates/AcademicTemplate'
+import SimpleTemplate from '../components/templates/SimpleTemplate'
+import ElegantTemplate from '../components/templates/ElegantTemplate'
+import BoldTemplate from '../components/templates/BoldTemplate'
+import CompactTemplate from '../components/templates/CompactTemplate'
+import StylishTemplate from '../components/templates/StylishTemplate'
+import CorporateTemplate from '../components/templates/CorporateTemplate'
+import TimelineTemplate from '../components/templates/TimelineTemplate'
+import TwoColumnTemplate from '../components/templates/TwoColumnTemplate'
+import ColorfulTemplate from '../components/templates/ColorfulTemplate'
+import StartupTemplate from '../components/templates/StartupTemplate'
+import FinanceTemplate from '../components/templates/FinanceTemplate'
 
 const templateComponents = {
   modern: ModernTemplate,
@@ -46,36 +46,36 @@ const templateComponents = {
   colorful: ColorfulTemplate,
   startup: StartupTemplate,
   finance: FinanceTemplate
-};
+}
 
 const Templates = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [templateColors, setTemplateColors] = useState({});
-  const [previewTemplate, setPreviewTemplate] = useState(null);
-  const [previewScale, setPreviewScale] = useState(0.75);
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedTemplate, setSelectedTemplate] = useState(null)
+  const [templateColors, setTemplateColors] = useState({})
+  const [previewTemplate, setPreviewTemplate] = useState(null)
+  const [previewScale, setPreviewScale] = useState(0.75)
 
   useEffect(() => {
     const updateScale = () => {
-      const width = window.innerWidth;
+      const width = window.innerWidth
       if (width < 640) {
-        setPreviewScale(0.4);
+        setPreviewScale(0.4)
       } else if (width < 1024) {
-        setPreviewScale(0.6);
+        setPreviewScale(0.6)
       } else if (width < 1280) {
-        setPreviewScale(0.75);
+        setPreviewScale(0.75)
       } else {
-        setPreviewScale(0.85);
+        setPreviewScale(0.85)
       }
-    };
+    }
 
-    updateScale();
-    window.addEventListener('resize', updateScale);
-    return () => window.removeEventListener('resize', updateScale);
-  }, []);
+    updateScale()
+    window.addEventListener('resize', updateScale)
+    return () => window.removeEventListener('resize', updateScale)
+  }, [])
 
   const templates = [
     {
@@ -238,7 +238,7 @@ const Templates = () => {
       color: 'from-cyan-600 to-cyan-700',
       icon: '🏢'
     }
-  ];
+  ]
 
   const categories = [
     { id: 'all', label: 'All Templates', icon: '📚' },
@@ -246,14 +246,14 @@ const Templates = () => {
     { id: 'creative', label: 'Creative', icon: '🎨' },
     { id: 'simple', label: 'Simple', icon: '📄' },
     { id: 'traditional', label: 'Traditional', icon: '📋' }
-  ];
+  ]
 
   const filteredTemplates = templates.filter(template => {
-    const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory
     const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         template.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+                         template.description.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesCategory && matchesSearch
+  })
 
   const colorPresets = [
     { name: 'Blue', primary: '#3B82F6', text: '#1F2937', secondary: '#6B7280' },
@@ -265,19 +265,19 @@ const Templates = () => {
     { name: 'Pink', primary: '#EC4899', text: '#1F2937', secondary: '#6B7280' },
     { name: 'Indigo', primary: '#6366F1', text: '#1F2937', secondary: '#6B7280' },
     { name: 'Dark', primary: '#1F2937', text: '#1F2937', secondary: '#4B5563' }
-  ];
+  ]
 
   const handleSelectTemplate = (templateId, colors = null) => {
     const defaultColors = {
       primary: '#3B82F6',
       text: '#1F2937',
       secondary: '#6B7280'
-    };
+    }
     
-    const selectedColors = colors || templateColors[templateId] || defaultColors;
-    const colorsParam = encodeURIComponent(JSON.stringify(selectedColors));
-    navigate(`/editor?template=${templateId}&colors=${colorsParam}`);
-  };
+    const selectedColors = colors || templateColors[templateId] || defaultColors
+    const colorsParam = encodeURIComponent(JSON.stringify(selectedColors))
+    navigate(`/editor?template=${templateId}&colors=${colorsParam}`)
+  }
 
   const handleColorChange = (templateId, colorType, value) => {
     setTemplateColors(prev => ({
@@ -289,48 +289,48 @@ const Templates = () => {
         text: prev[templateId]?.text || '#1F2937',
         secondary: prev[templateId]?.secondary || '#6B7280'
       }
-    }));
-  };
+    }))
+  }
 
   const handlePresetColor = (templateId, preset) => {
     setTemplateColors(prev => ({
       ...prev,
       [templateId]: preset
-    }));
-  };
+    }))
+  }
 
   const handlePreviewTemplate = (templateId) => {
-    setPreviewTemplate(templateId);
-  };
+    setPreviewTemplate(templateId)
+  }
 
   const handleClosePreview = () => {
-    setPreviewTemplate(null);
-  };
+    setPreviewTemplate(null)
+  }
 
   const handleUseFromPreview = (templateId) => {
     const currentColors = templateColors[templateId] || {
       primary: '#3B82F6',
       text: '#1F2937',
       secondary: '#6B7280'
-    };
-    handleSelectTemplate(templateId, currentColors);
-    setPreviewTemplate(null);
-  };
+    }
+    handleSelectTemplate(templateId, currentColors)
+    setPreviewTemplate(null)
+  }
 
   // Get sample data for preview (so users can see how template looks with content)
   const getPreviewData = (templateId) => {
-    const sampleData = sampleResumes[0];
+    const sampleData = sampleResumes[0]
     const currentColors = templateColors[templateId] || {
       primary: '#3B82F6',
       text: '#1F2937',
       secondary: '#6B7280'
-    };
+    }
     return {
       ...sampleData,
       template: templateId,
       colors: currentColors
-    };
-  };
+    }
+  }
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
@@ -448,8 +448,8 @@ const Templates = () => {
                 primary: '#3B82F6',
                 text: '#1F2937',
                 secondary: '#6B7280'
-              };
-              const isSelected = selectedTemplate === template.id;
+              }
+              const isSelected = selectedTemplate === template.id
 
               return (
                 <div
@@ -600,7 +600,7 @@ const Templates = () => {
                     </div>
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         )}
@@ -675,15 +675,15 @@ const Templates = () => {
                 }}
               >
                 {(() => {
-                  const TemplateComponent = templateComponents[previewTemplate];
-                  const previewData = getPreviewData(previewTemplate);
+                  const TemplateComponent = templateComponents[previewTemplate]
+                  const previewData = getPreviewData(previewTemplate)
                   return TemplateComponent ? (
                     <TemplateComponent data={previewData} />
                   ) : (
                     <div className="p-8 text-center text-gray-500">
                       Template preview not available
                     </div>
-                  );
+                  )
                 })()}
               </div>
             </div>
@@ -710,8 +710,8 @@ const Templates = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Templates;
+export default Templates
 

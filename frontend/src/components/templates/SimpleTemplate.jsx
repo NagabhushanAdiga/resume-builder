@@ -61,8 +61,8 @@ const SimpleTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SimpleTemplate;
+export default SimpleTemplate
 

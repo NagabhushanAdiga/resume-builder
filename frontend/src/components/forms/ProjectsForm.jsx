@@ -10,36 +10,36 @@ const ProjectsForm = ({ data, onChange }) => {
         startDate: '',
         endDate: ''
       }
-    ]);
-  };
+    ])
+  }
 
   const removeProject = (index) => {
-    onChange(data.filter((_, i) => i !== index));
-  };
+    onChange(data.filter((_, i) => i !== index))
+  }
 
   const updateProject = (index, field, value) => {
-    const updated = [...data];
-    updated[index] = { ...updated[index], [field]: value };
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[index] = { ...updated[index], [field]: value }
+    onChange(updated)
+  }
 
   const addTechnology = (projectIndex) => {
-    const updated = [...data];
-    updated[projectIndex].technologies = [...updated[projectIndex].technologies, ''];
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[projectIndex].technologies = [...updated[projectIndex].technologies, '']
+    onChange(updated)
+  }
 
   const removeTechnology = (projectIndex, techIndex) => {
-    const updated = [...data];
-    updated[projectIndex].technologies = updated[projectIndex].technologies.filter((_, i) => i !== techIndex);
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[projectIndex].technologies = updated[projectIndex].technologies.filter((_, i) => i !== techIndex)
+    onChange(updated)
+  }
 
   const updateTechnology = (projectIndex, techIndex, value) => {
-    const updated = [...data];
-    updated[projectIndex].technologies[techIndex] = value;
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[projectIndex].technologies[techIndex] = value
+    onChange(updated)
+  }
 
   return (
     <div className="space-y-6">
@@ -182,8 +182,8 @@ const ProjectsForm = ({ data, onChange }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ProjectsForm;
+export default ProjectsForm
 

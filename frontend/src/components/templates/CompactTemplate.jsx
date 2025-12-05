@@ -109,8 +109,8 @@ const CompactTemplate = ({ data }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CompactTemplate;
+export default CompactTemplate
 

@@ -69,8 +69,8 @@ const ElegantTemplate = ({ data }) => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ElegantTemplate;
+export default ElegantTemplate
 

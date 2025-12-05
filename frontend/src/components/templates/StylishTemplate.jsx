@@ -91,8 +91,8 @@ const StylishTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default StylishTemplate;
+export default StylishTemplate
 

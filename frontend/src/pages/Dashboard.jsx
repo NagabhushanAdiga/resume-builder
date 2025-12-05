@@ -1,47 +1,47 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useResume } from '../context/ResumeContext';
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useResume } from '../context/ResumeContext'
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
-  const { resumes, fetchResumes, deleteResume, duplicateResume, loading } = useResume();
-  const navigate = useNavigate();
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [copying, setCopying] = useState(null);
+  const { user, logout } = useAuth()
+  const { resumes, fetchResumes, deleteResume, duplicateResume, loading } = useResume()
+  const navigate = useNavigate()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [copying, setCopying] = useState(null)
 
   useEffect(() => {
-    fetchResumes();
-  }, []);
+    fetchResumes()
+  }, [])
 
   const handleCreateNew = () => {
-    navigate('/editor');
-  };
+    navigate('/editor')
+  }
 
   const handleEdit = (id) => {
-    navigate(`/editor/${id}`);
-  };
+    navigate(`/editor/${id}`)
+  }
 
   const handlePreview = (id) => {
-    navigate(`/preview/${id}`);
-  };
+    navigate(`/preview/${id}`)
+  }
 
   const handleDelete = async (id) => {
-    const result = await deleteResume(id);
+    const result = await deleteResume(id)
     if (result.success) {
-      setShowDeleteConfirm(null);
+      setShowDeleteConfirm(null)
     }
-  };
+  }
 
   const handleCopy = async (id) => {
-    setCopying(id);
-    const result = await duplicateResume(id);
-    setCopying(null);
+    setCopying(id)
+    const result = await duplicateResume(id)
+    setCopying(null)
     if (result.success) {
       // Optionally show a success message or navigate to the duplicated resume
     }
-  };
+  }
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
@@ -309,8 +309,8 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => {
-                  setShowLogoutConfirm(false);
-                  logout();
+                  setShowLogoutConfirm(false)
+                  logout()
                 }}
                 className="flex-1 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-colors font-medium shadow-lg text-sm sm:text-base"
               >
@@ -321,8 +321,8 @@ const Dashboard = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard
 

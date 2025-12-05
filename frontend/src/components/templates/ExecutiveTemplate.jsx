@@ -68,8 +68,8 @@ const ExecutiveTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ExecutiveTemplate;
+export default ExecutiveTemplate
 

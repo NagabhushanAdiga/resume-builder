@@ -64,8 +64,8 @@ const MinimalTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default MinimalTemplate;
+export default MinimalTemplate
 

@@ -70,8 +70,8 @@ const BoldTemplate = ({ data }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BoldTemplate;
+export default BoldTemplate
 

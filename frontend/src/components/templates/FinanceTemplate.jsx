@@ -3,7 +3,7 @@ const FinanceTemplate = ({ data }) => {
     primary: '#1F2937',
     text: '#1F2937',
     secondary: '#6B7280'
-  };
+  }
 
   return (
     <div className="bg-white" style={{ width: '210mm', minHeight: '297mm', padding: '15mm 20mm', boxSizing: 'border-box', margin: 0 }}>
@@ -127,8 +127,8 @@ const FinanceTemplate = ({ data }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FinanceTemplate;
+export default FinanceTemplate
 

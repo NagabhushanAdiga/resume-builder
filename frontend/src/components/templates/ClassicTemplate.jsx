@@ -75,8 +75,8 @@ const ClassicTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ClassicTemplate;
+export default ClassicTemplate
 

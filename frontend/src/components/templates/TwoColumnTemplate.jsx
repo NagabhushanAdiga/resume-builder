@@ -3,7 +3,7 @@ const TwoColumnTemplate = ({ data }) => {
     primary: '#3B82F6',
     text: '#1F2937',
     secondary: '#6B7280'
-  };
+  }
 
   return (
     <div className="bg-white" style={{ width: '210mm', minHeight: '297mm', padding: '15mm 20mm', boxSizing: 'border-box', margin: 0 }}>
@@ -147,8 +147,8 @@ const TwoColumnTemplate = ({ data }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TwoColumnTemplate;
+export default TwoColumnTemplate
 

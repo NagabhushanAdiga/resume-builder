@@ -6,18 +6,18 @@ const LanguagesForm = ({ data, onChange }) => {
         language: '',
         proficiency: 'intermediate'
       }
-    ]);
-  };
+    ])
+  }
 
   const removeLanguage = (index) => {
-    onChange(data.filter((_, i) => i !== index));
-  };
+    onChange(data.filter((_, i) => i !== index))
+  }
 
   const updateLanguage = (index, field, value) => {
-    const updated = [...data];
-    updated[index] = { ...updated[index], [field]: value };
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[index] = { ...updated[index], [field]: value }
+    onChange(updated)
+  }
 
   const proficiencyLevels = [
     'beginner',
@@ -26,7 +26,7 @@ const LanguagesForm = ({ data, onChange }) => {
     'advanced',
     'fluent',
     'native'
-  ];
+  ]
 
   return (
     <div className="space-y-6">
@@ -96,8 +96,8 @@ const LanguagesForm = ({ data, onChange }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default LanguagesForm;
+export default LanguagesForm
 

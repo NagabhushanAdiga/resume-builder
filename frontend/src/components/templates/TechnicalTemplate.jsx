@@ -89,8 +89,8 @@ const TechnicalTemplate = ({ data }) => {
         </section>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default TechnicalTemplate;
+export default TechnicalTemplate
 

@@ -97,7 +97,7 @@ export const sampleResumes = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-20')
   }
-];
+]
 
 export const defaultResumeData = {
   title: 'My Resume',
@@ -123,5 +123,5 @@ export const defaultResumeData = {
   projects: [],
   certifications: [],
   languages: []
-};
+}
 

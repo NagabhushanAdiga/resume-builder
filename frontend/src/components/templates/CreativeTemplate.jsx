@@ -71,8 +71,8 @@ const CreativeTemplate = ({ data }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CreativeTemplate;
+export default CreativeTemplate
 

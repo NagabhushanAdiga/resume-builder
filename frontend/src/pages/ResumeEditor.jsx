@@ -1,36 +1,37 @@
-import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { useResume } from '../context/ResumeContext';
-import { useAuth } from '../context/AuthContext';
-import PersonalInfoForm from '../components/forms/PersonalInfoForm';
-import ExperienceForm from '../components/forms/ExperienceForm';
-import EducationForm from '../components/forms/EducationForm';
-import SkillsForm from '../components/forms/SkillsForm';
-import ProjectsForm from '../components/forms/ProjectsForm';
-import CertificationsForm from '../components/forms/CertificationsForm';
-import LanguagesForm from '../components/forms/LanguagesForm';
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { useResume } from '../context/ResumeContext'
+import { useAuth } from '../context/AuthContext'
+import { calculateATSScore } from '../utils/atsScore'
+import PersonalInfoForm from '../components/forms/PersonalInfoForm'
+import ExperienceForm from '../components/forms/ExperienceForm'
+import EducationForm from '../components/forms/EducationForm'
+import SkillsForm from '../components/forms/SkillsForm'
+import ProjectsForm from '../components/forms/ProjectsForm'
+import CertificationsForm from '../components/forms/CertificationsForm'
+import LanguagesForm from '../components/forms/LanguagesForm'
 
 // Import all templates
-import ModernTemplate from '../components/templates/ModernTemplate';
-import ClassicTemplate from '../components/templates/ClassicTemplate';
-import ProfessionalTemplate from '../components/templates/ProfessionalTemplate';
-import CreativeTemplate from '../components/templates/CreativeTemplate';
-import MinimalTemplate from '../components/templates/MinimalTemplate';
-import ExecutiveTemplate from '../components/templates/ExecutiveTemplate';
-import TechnicalTemplate from '../components/templates/TechnicalTemplate';
-import DesignerTemplate from '../components/templates/DesignerTemplate';
-import AcademicTemplate from '../components/templates/AcademicTemplate';
-import SimpleTemplate from '../components/templates/SimpleTemplate';
-import ElegantTemplate from '../components/templates/ElegantTemplate';
-import BoldTemplate from '../components/templates/BoldTemplate';
-import CompactTemplate from '../components/templates/CompactTemplate';
-import StylishTemplate from '../components/templates/StylishTemplate';
-import CorporateTemplate from '../components/templates/CorporateTemplate';
-import TimelineTemplate from '../components/templates/TimelineTemplate';
-import TwoColumnTemplate from '../components/templates/TwoColumnTemplate';
-import ColorfulTemplate from '../components/templates/ColorfulTemplate';
-import StartupTemplate from '../components/templates/StartupTemplate';
-import FinanceTemplate from '../components/templates/FinanceTemplate';
+import ModernTemplate from '../components/templates/ModernTemplate'
+import ClassicTemplate from '../components/templates/ClassicTemplate'
+import ProfessionalTemplate from '../components/templates/ProfessionalTemplate'
+import CreativeTemplate from '../components/templates/CreativeTemplate'
+import MinimalTemplate from '../components/templates/MinimalTemplate'
+import ExecutiveTemplate from '../components/templates/ExecutiveTemplate'
+import TechnicalTemplate from '../components/templates/TechnicalTemplate'
+import DesignerTemplate from '../components/templates/DesignerTemplate'
+import AcademicTemplate from '../components/templates/AcademicTemplate'
+import SimpleTemplate from '../components/templates/SimpleTemplate'
+import ElegantTemplate from '../components/templates/ElegantTemplate'
+import BoldTemplate from '../components/templates/BoldTemplate'
+import CompactTemplate from '../components/templates/CompactTemplate'
+import StylishTemplate from '../components/templates/StylishTemplate'
+import CorporateTemplate from '../components/templates/CorporateTemplate'
+import TimelineTemplate from '../components/templates/TimelineTemplate'
+import TwoColumnTemplate from '../components/templates/TwoColumnTemplate'
+import ColorfulTemplate from '../components/templates/ColorfulTemplate'
+import StartupTemplate from '../components/templates/StartupTemplate'
+import FinanceTemplate from '../components/templates/FinanceTemplate'
 
 const templateComponents = {
   modern: ModernTemplate,
@@ -53,22 +54,23 @@ const templateComponents = {
   colorful: ColorfulTemplate,
   startup: StartupTemplate,
   finance: FinanceTemplate
-};
+}
 
 const ResumeEditor = () => {
-  const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { fetchResume, createResume, updateResume, currentResume } = useResume();
-  const { user } = useAuth();
+  const { id } = useParams()
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { fetchResume, createResume, updateResume, currentResume } = useResume()
+  const { user } = useAuth()
   
-  const [activeSection, setActiveSection] = useState('personal');
-  const [saving, setSaving] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [showPreview, setShowPreview] = useState(true);
-  const [pages, setPages] = useState([0]);
-  const previewRef = useRef();
-  const contentRef = useRef();
+  const [activeSection, setActiveSection] = useState('personal')
+  const [saving, setSaving] = useState(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [showPreview, setShowPreview] = useState(true)
+  const [showATSScore, setShowATSScore] = useState(false)
+  const [pages, setPages] = useState([0])
+  const previewRef = useRef()
+  const contentRef = useRef()
   const [resumeData, setResumeData] = useState({
     title: 'My Resume',
     template: 'modern',
@@ -93,24 +95,34 @@ const ResumeEditor = () => {
     projects: [],
     certifications: [],
     languages: []
-  });
+  })
+
+  // Calculate ATS Score
+  const atsScore = useMemo(() => {
+    try {
+      return calculateATSScore(resumeData)
+    } catch (error) {
+      console.error('Error calculating ATS score:', error)
+      return { score: 0, level: 'poor', levelColor: 'red', feedback: [], details: {} }
+    }
+  }, [resumeData])
 
   useEffect(() => {
-    console.log('ResumeEditor useEffect triggered, id:', id);
+    console.log('ResumeEditor useEffect triggered, id:', id)
     
     if (id) {
       // Small delay to ensure localStorage is ready
       const loadResume = async () => {
         try {
           // Wait a bit to ensure context is initialized
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 100))
           
-          console.log('Loading resume with id:', id);
-          const result = await fetchResume(id);
-          console.log('Fetch result:', result);
+          console.log('Loading resume with id:', id)
+          const result = await fetchResume(id)
+          console.log('Fetch result:', result)
           
           if (result.success && result.data) {
-            console.log('Resume data loaded:', result.data);
+            console.log('Resume data loaded:', result.data)
             // Ensure colors exist in the data
             const dataWithColors = {
               ...result.data,
@@ -119,35 +131,35 @@ const ResumeEditor = () => {
                 text: '#1F2937',
                 secondary: '#6B7280'
               }
-            };
-            setResumeData(dataWithColors);
-            console.log('Resume data set in state');
+            }
+            setResumeData(dataWithColors)
+            console.log('Resume data set in state')
           } else {
-            console.error('Failed to load resume:', result.message);
+            console.error('Failed to load resume:', result.message)
             // Don't navigate immediately - maybe the resume just needs to be created
             // Show an error or allow user to create new
           }
         } catch (error) {
-          console.error('Error loading resume:', error);
+          console.error('Error loading resume:', error)
         }
-      };
-      loadResume();
+      }
+      loadResume()
     } else {
       // Reset to default when no id (new resume)
       const defaultColors = {
         primary: '#3B82F6',
         text: '#1F2937',
         secondary: '#6B7280'
-      };
+      }
 
       // Check for colors query parameter
-      const colorsParam = searchParams.get('colors');
-      let colors = defaultColors;
+      const colorsParam = searchParams.get('colors')
+      let colors = defaultColors
       if (colorsParam) {
         try {
-          colors = JSON.parse(decodeURIComponent(colorsParam));
+          colors = JSON.parse(decodeURIComponent(colorsParam))
         } catch (e) {
-          console.error('Error parsing colors:', e);
+          console.error('Error parsing colors:', e)
         }
       }
 
@@ -171,75 +183,75 @@ const ResumeEditor = () => {
         projects: [],
         certifications: [],
         languages: []
-      });
+      })
       
       // Check for template query parameter
-      const templateParam = searchParams.get('template');
+      const templateParam = searchParams.get('template')
       if (templateParam) {
-        setResumeData(prev => ({ ...prev, template: templateParam, colors: colors }));
+        setResumeData(prev => ({ ...prev, template: templateParam, colors: colors }))
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, searchParams]);
+  }, [id, searchParams])
 
   // Calculate pages based on content height
   useEffect(() => {
     if (contentRef.current && resumeData) {
       const calculatePages = () => {
         // Get the actual rendered height of the content
-        const contentElement = contentRef.current;
-        const contentHeight = contentElement.scrollHeight;
+        const contentElement = contentRef.current
+        const contentHeight = contentElement.scrollHeight
         
         // Convert 297mm (A4 height) to pixels
         // At 96 DPI: 1mm = 3.779527559 pixels
-        const mmToPx = 3.779527559; // 1mm in pixels at 96 DPI
-        const a4HeightInPx = 297 * mmToPx; // ~1122.52px
+        const mmToPx = 3.779527559 // 1mm in pixels at 96 DPI
+        const a4HeightInPx = 297 * mmToPx // ~1122.52px
         
         // Calculate number of pages needed
-        const numPages = Math.ceil(contentHeight / a4HeightInPx);
+        const numPages = Math.ceil(contentHeight / a4HeightInPx)
         
-        setPages(Array.from({ length: Math.max(1, numPages) }, (_, i) => i));
-      };
+        setPages(Array.from({ length: Math.max(1, numPages) }, (_, i) => i))
+      }
       
       // Wait for content to render, then recalculate on resize
-      const timeoutId = setTimeout(calculatePages, 200);
+      const timeoutId = setTimeout(calculatePages, 200)
       
       // Recalculate on window resize
       const handleResize = () => {
-        setTimeout(calculatePages, 100);
-      };
-      window.addEventListener('resize', handleResize);
+        setTimeout(calculatePages, 100)
+      }
+      window.addEventListener('resize', handleResize)
       
       return () => {
-        clearTimeout(timeoutId);
-        window.removeEventListener('resize', handleResize);
-      };
+        clearTimeout(timeoutId)
+        window.removeEventListener('resize', handleResize)
+      }
     }
-  }, [resumeData]);
+  }, [resumeData])
 
   const handleSave = async () => {
-    setSaving(true);
-    let result;
+    setSaving(true)
+    let result
     if (id) {
-      result = await updateResume(id, resumeData);
+      result = await updateResume(id, resumeData)
     } else {
-      result = await createResume(resumeData);
+      result = await createResume(resumeData)
     }
-    setSaving(false);
+    setSaving(false)
     
     if (result.success) {
       if (!id) {
-        navigate(`/editor/${result.data._id}`);
+        navigate(`/editor/${result.data._id}`)
       }
     }
-  };
+  }
 
   const updateField = (section, data) => {
     setResumeData(prev => ({
       ...prev,
       [section]: data
-    }));
-  };
+    }))
+  }
 
   const sections = [
     { id: 'personal', label: 'Personal Info', icon: '👤' },
@@ -250,7 +262,7 @@ const ResumeEditor = () => {
     { id: 'certifications', label: 'Certifications', icon: '📜' },
     { id: 'languages', label: 'Languages', icon: '🌐' },
     { id: 'colors', label: 'Colors', icon: '🎨' }
-  ];
+  ]
 
   const templates = [
     { id: 'modern', name: 'Modern', color: 'from-blue-500 to-blue-600' },
@@ -273,9 +285,9 @@ const ResumeEditor = () => {
     { id: 'colorful', name: 'Colorful', color: 'from-rainbow-500 to-rainbow-600' },
     { id: 'startup', name: 'Startup', color: 'from-orange-500 to-red-500' },
     { id: 'finance', name: 'Finance', color: 'from-gray-800 to-gray-900' }
-  ];
+  ]
 
-  const TemplateComponent = templateComponents[resumeData.template] || ModernTemplate;
+  const TemplateComponent = templateComponents[resumeData.template] || ModernTemplate
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -327,6 +339,20 @@ const ResumeEditor = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
                 </svg>
                 <span className="hidden sm:inline">Templates</span>
+              </button>
+              <button
+                onClick={() => setShowATSScore(!showATSScore)}
+                className={`hidden lg:flex px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-colors items-center gap-2 text-xs sm:text-sm font-medium ${
+                  showATSScore 
+                    ? 'bg-white/20 text-white border border-white/30' 
+                    : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
+                }`}
+                title="ATS Score"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>ATS: {atsScore?.score || 0}%</span>
               </button>
               <button
                 onClick={() => setShowPreview(!showPreview)}
@@ -395,8 +421,8 @@ const ResumeEditor = () => {
                 <button
                   key={template.id}
                   onClick={() => {
-                    setResumeData(prev => ({ ...prev, template: template.id }));
-                    setIsDrawerOpen(false); // Close drawer on mobile after selection
+                    setResumeData(prev => ({ ...prev, template: template.id }))
+                    setIsDrawerOpen(false) // Close drawer on mobile after selection
                   }}
                   className={`w-full text-left rounded-lg overflow-hidden transition-all ${
                     resumeData.template === template.id
@@ -705,6 +731,127 @@ const ResumeEditor = () => {
           </div>
         </div>
 
+        {/* ATS Score Panel */}
+        {showATSScore && (
+          <div className="fixed lg:relative lg:block right-0 top-16 lg:top-0 w-full lg:w-80 bg-white border-l border-gray-200 shadow-xl lg:shadow-none z-40 h-[calc(100vh-4rem)] lg:h-auto overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 z-10">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  ATS Score
+                </h3>
+                <button
+                  onClick={() => setShowATSScore(false)}
+                  className="lg:hidden text-gray-500 hover:text-gray-700"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              {/* Score Display */}
+              <div className="text-center mb-6">
+                <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full text-3xl font-bold mb-3 ${
+                  atsScore?.levelColor === 'green' ? 'bg-green-100 text-green-700' :
+                  atsScore?.levelColor === 'blue' ? 'bg-blue-100 text-blue-700' :
+                  atsScore?.levelColor === 'yellow' ? 'bg-yellow-100 text-yellow-700' :
+                  'bg-red-100 text-red-700'
+                }`}>
+                  {atsScore?.score || 0}%
+                </div>
+                <p className="text-sm font-semibold text-gray-700 capitalize">{atsScore?.level || 'poor'}</p>
+                <p className="text-xs text-gray-500 mt-1">ATS Compatibility</p>
+              </div>
+
+              {/* Score Breakdown */}
+              <div className="space-y-3 mb-6">
+                <h4 className="text-sm font-semibold text-gray-900">Checklist</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    {atsScore?.details?.contactInfo ? (
+                      <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span className={atsScore.details.contactInfo ? 'text-gray-700' : 'text-gray-400'}>Contact Information</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    {atsScore?.details?.summary ? (
+                      <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span className={atsScore.details.summary ? 'text-gray-700' : 'text-gray-400'}>Professional Summary</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    {atsScore?.details?.experience ? (
+                      <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span className={atsScore.details.experience ? 'text-gray-700' : 'text-gray-400'}>Work Experience</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    {atsScore?.details?.education ? (
+                      <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span className={atsScore.details.education ? 'text-gray-700' : 'text-gray-400'}>Education</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    {atsScore?.details?.skills ? (
+                      <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span className={atsScore.details.skills ? 'text-gray-700' : 'text-gray-400'}>Skills</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feedback */}
+              {atsScore?.feedback && atsScore.feedback.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-gray-900">Suggestions</h4>
+                  {atsScore.feedback.map((item, index) => (
+                    <div key={index} className={`p-3 rounded-lg text-sm ${
+                      item.type === 'warning' ? 'bg-yellow-50 text-yellow-800 border border-yellow-200' :
+                      'bg-blue-50 text-blue-800 border border-blue-200'
+                    }`}>
+                      {item.message}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Live Preview Section */}
         {showPreview && (
           <div className="hidden lg:block lg:w-1/2 border-l border-gray-200 bg-gray-100 overflow-y-auto">
@@ -741,9 +888,9 @@ const ResumeEditor = () => {
               {/* Visible paginated preview */}
               {pages.map((pageNum) => {
                 // Calculate the offset for this page in pixels
-                const mmToPx = 3.779527559;
-                const pageHeightInPx = 297 * mmToPx;
-                const offsetInPx = pageNum * pageHeightInPx;
+                const mmToPx = 3.779527559
+                const pageHeightInPx = 297 * mmToPx
+                const offsetInPx = pageNum * pageHeightInPx
                 
                 return (
                   <div
@@ -780,15 +927,15 @@ const ResumeEditor = () => {
                       </div>
                     )}
                   </div>
-                );
+                )
               })}
             </div>
           </div>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ResumeEditor;
+export default ResumeEditor
 

@@ -110,8 +110,8 @@ const ProfessionalTemplate = ({ data }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfessionalTemplate;
+export default ProfessionalTemplate
 

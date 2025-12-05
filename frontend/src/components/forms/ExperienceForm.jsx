@@ -11,18 +11,18 @@ const ExperienceForm = ({ data, onChange }) => {
         current: false,
         description: ''
       }
-    ]);
-  };
+    ])
+  }
 
   const removeExperience = (index) => {
-    onChange(data.filter((_, i) => i !== index));
-  };
+    onChange(data.filter((_, i) => i !== index))
+  }
 
   const updateExperience = (index, field, value) => {
-    const updated = [...data];
-    updated[index] = { ...updated[index], [field]: value };
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[index] = { ...updated[index], [field]: value }
+    onChange(updated)
+  }
 
   return (
     <div className="space-y-6">
@@ -154,8 +154,8 @@ const ExperienceForm = ({ data, onChange }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ExperienceForm;
+export default ExperienceForm
 

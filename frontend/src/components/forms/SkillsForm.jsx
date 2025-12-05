@@ -6,36 +6,36 @@ const SkillsForm = ({ data, onChange }) => {
         category: '',
         items: ['']
       }
-    ]);
-  };
+    ])
+  }
 
   const removeSkillCategory = (index) => {
-    onChange(data.filter((_, i) => i !== index));
-  };
+    onChange(data.filter((_, i) => i !== index))
+  }
 
   const updateCategory = (index, value) => {
-    const updated = [...data];
-    updated[index] = { ...updated[index], category: value };
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[index] = { ...updated[index], category: value }
+    onChange(updated)
+  }
 
   const addSkillItem = (categoryIndex) => {
-    const updated = [...data];
-    updated[categoryIndex].items = [...updated[categoryIndex].items, ''];
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[categoryIndex].items = [...updated[categoryIndex].items, '']
+    onChange(updated)
+  }
 
   const removeSkillItem = (categoryIndex, itemIndex) => {
-    const updated = [...data];
-    updated[categoryIndex].items = updated[categoryIndex].items.filter((_, i) => i !== itemIndex);
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[categoryIndex].items = updated[categoryIndex].items.filter((_, i) => i !== itemIndex)
+    onChange(updated)
+  }
 
   const updateSkillItem = (categoryIndex, itemIndex, value) => {
-    const updated = [...data];
-    updated[categoryIndex].items[itemIndex] = value;
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[categoryIndex].items[itemIndex] = value
+    onChange(updated)
+  }
 
   return (
     <div className="space-y-6">
@@ -122,8 +122,8 @@ const SkillsForm = ({ data, onChange }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SkillsForm;
+export default SkillsForm
 

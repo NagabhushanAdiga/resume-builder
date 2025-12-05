@@ -11,18 +11,18 @@ const EducationForm = ({ data, onChange }) => {
         endDate: '',
         gpa: ''
       }
-    ]);
-  };
+    ])
+  }
 
   const removeEducation = (index) => {
-    onChange(data.filter((_, i) => i !== index));
-  };
+    onChange(data.filter((_, i) => i !== index))
+  }
 
   const updateEducation = (index, field, value) => {
-    const updated = [...data];
-    updated[index] = { ...updated[index], [field]: value };
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[index] = { ...updated[index], [field]: value }
+    onChange(updated)
+  }
 
   return (
     <div className="space-y-6">
@@ -153,8 +153,8 @@ const EducationForm = ({ data, onChange }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default EducationForm;
+export default EducationForm
 

@@ -8,18 +8,18 @@ const CertificationsForm = ({ data, onChange }) => {
         date: '',
         credentialId: ''
       }
-    ]);
-  };
+    ])
+  }
 
   const removeCertification = (index) => {
-    onChange(data.filter((_, i) => i !== index));
-  };
+    onChange(data.filter((_, i) => i !== index))
+  }
 
   const updateCertification = (index, field, value) => {
-    const updated = [...data];
-    updated[index] = { ...updated[index], [field]: value };
-    onChange(updated);
-  };
+    const updated = [...data]
+    updated[index] = { ...updated[index], [field]: value }
+    onChange(updated)
+  }
 
   return (
     <div className="space-y-6">
@@ -111,8 +111,8 @@ const CertificationsForm = ({ data, onChange }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default CertificationsForm;
+export default CertificationsForm
 
