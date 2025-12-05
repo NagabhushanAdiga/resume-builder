@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { sampleResumes } from '../data/mockData';
+import { defaultResumeData, sampleResumes } from '../data/mockData';
 
 // Import all templates
 import ModernTemplate from '../components/templates/ModernTemplate';
@@ -317,7 +317,7 @@ const Templates = () => {
     setPreviewTemplate(null);
   };
 
-  // Get sample data for preview
+  // Get sample data for preview (so users can see how template looks with content)
   const getPreviewData = (templateId) => {
     const sampleData = sampleResumes[0];
     const currentColors = templateColors[templateId] || {

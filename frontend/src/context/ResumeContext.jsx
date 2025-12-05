@@ -1,5 +1,4 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { sampleResumes } from '../data/mockData';
 
 const ResumeContext = createContext();
 
@@ -16,18 +15,12 @@ export const ResumeProvider = ({ children }) => {
   const [currentResume, setCurrentResume] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Initialize with sample data or load from localStorage
+  // Load resumes from localStorage
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (user) {
       const userResumes = JSON.parse(localStorage.getItem(`resumes_${user._id}`) || '[]');
-      if (userResumes.length === 0) {
-        // Use sample data on first load
-        localStorage.setItem(`resumes_${user._id}`, JSON.stringify(sampleResumes));
-        setResumes(sampleResumes);
-      } else {
-        setResumes(userResumes);
-      }
+      setResumes(userResumes);
     }
   }, []);
 
