@@ -1,6 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { sampleResumes } from '../data/mockData';
+
+// Import all templates
+import ModernTemplate from '../components/templates/ModernTemplate';
+import ClassicTemplate from '../components/templates/ClassicTemplate';
+import ProfessionalTemplate from '../components/templates/ProfessionalTemplate';
+import CreativeTemplate from '../components/templates/CreativeTemplate';
+import MinimalTemplate from '../components/templates/MinimalTemplate';
+import ExecutiveTemplate from '../components/templates/ExecutiveTemplate';
+import TechnicalTemplate from '../components/templates/TechnicalTemplate';
+import DesignerTemplate from '../components/templates/DesignerTemplate';
+import AcademicTemplate from '../components/templates/AcademicTemplate';
+import SimpleTemplate from '../components/templates/SimpleTemplate';
+import ElegantTemplate from '../components/templates/ElegantTemplate';
+import BoldTemplate from '../components/templates/BoldTemplate';
+import CompactTemplate from '../components/templates/CompactTemplate';
+import StylishTemplate from '../components/templates/StylishTemplate';
+import CorporateTemplate from '../components/templates/CorporateTemplate';
+import TimelineTemplate from '../components/templates/TimelineTemplate';
+import TwoColumnTemplate from '../components/templates/TwoColumnTemplate';
+import ColorfulTemplate from '../components/templates/ColorfulTemplate';
+import StartupTemplate from '../components/templates/StartupTemplate';
+import FinanceTemplate from '../components/templates/FinanceTemplate';
+
+const templateComponents = {
+  modern: ModernTemplate,
+  classic: ClassicTemplate,
+  professional: ProfessionalTemplate,
+  creative: CreativeTemplate,
+  minimal: MinimalTemplate,
+  executive: ExecutiveTemplate,
+  technical: TechnicalTemplate,
+  designer: DesignerTemplate,
+  academic: AcademicTemplate,
+  simple: SimpleTemplate,
+  elegant: ElegantTemplate,
+  bold: BoldTemplate,
+  compact: CompactTemplate,
+  stylish: StylishTemplate,
+  corporate: CorporateTemplate,
+  timeline: TimelineTemplate,
+  twocolumn: TwoColumnTemplate,
+  colorful: ColorfulTemplate,
+  startup: StartupTemplate,
+  finance: FinanceTemplate
+};
 
 const Templates = () => {
   const { user, logout } = useAuth();
@@ -9,6 +55,27 @@ const Templates = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [templateColors, setTemplateColors] = useState({});
+  const [previewTemplate, setPreviewTemplate] = useState(null);
+  const [previewScale, setPreviewScale] = useState(0.75);
+
+  useEffect(() => {
+    const updateScale = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setPreviewScale(0.4);
+      } else if (width < 1024) {
+        setPreviewScale(0.6);
+      } else if (width < 1280) {
+        setPreviewScale(0.75);
+      } else {
+        setPreviewScale(0.85);
+      }
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
 
   const templates = [
     {
@@ -230,6 +297,39 @@ const Templates = () => {
       ...prev,
       [templateId]: preset
     }));
+  };
+
+  const handlePreviewTemplate = (templateId) => {
+    setPreviewTemplate(templateId);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewTemplate(null);
+  };
+
+  const handleUseFromPreview = (templateId) => {
+    const currentColors = templateColors[templateId] || {
+      primary: '#3B82F6',
+      text: '#1F2937',
+      secondary: '#6B7280'
+    };
+    handleSelectTemplate(templateId, currentColors);
+    setPreviewTemplate(null);
+  };
+
+  // Get sample data for preview
+  const getPreviewData = (templateId) => {
+    const sampleData = sampleResumes[0];
+    const currentColors = templateColors[templateId] || {
+      primary: '#3B82F6',
+      text: '#1F2937',
+      secondary: '#6B7280'
+    };
+    return {
+      ...sampleData,
+      template: templateId,
+      colors: currentColors
+    };
   };
 
   return (
@@ -477,15 +577,27 @@ const Templates = () => {
                       )}
                     </div>
 
-                    <button
-                      onClick={() => handleSelectTemplate(template.id, currentColors)}
-                      className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 group-hover:shadow-lg"
-                    >
-                      <span>Use Template</span>
-                      <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handlePreviewTemplate(template.id)}
+                        className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>Preview</span>
+                      </button>
+                      <button
+                        onClick={() => handleSelectTemplate(template.id, currentColors)}
+                        className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 group-hover:shadow-lg"
+                      >
+                        <span>Use</span>
+                        <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -493,6 +605,122 @@ const Templates = () => {
           </div>
         )}
       </main>
+
+      {/* Preview Modal */}
+      {previewTemplate && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
+          onClick={handleClosePreview}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-600">
+              <div className="flex-1">
+                <h2 className="text-xl sm:text-2xl font-bold text-white">
+                  Preview: {templates.find(t => t.id === previewTemplate)?.name || 'Template'}
+                </h2>
+                <p className="text-blue-100 text-xs sm:text-sm mt-1">
+                  See how your resume will look with this template (sample data shown)
+                </p>
+              </div>
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-2 mr-4 bg-white/10 backdrop-blur-sm rounded-lg p-1">
+                <button
+                  onClick={() => setPreviewScale(prev => Math.max(0.3, prev - 0.1))}
+                  className="text-white hover:bg-white/20 p-1.5 rounded transition-colors"
+                  title="Zoom Out"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                  </svg>
+                </button>
+                <span className="text-white text-xs font-medium px-2 min-w-[3rem] text-center">
+                  {Math.round(previewScale * 100)}%
+                </span>
+                <button
+                  onClick={() => setPreviewScale(prev => Math.min(1.2, prev + 0.1))}
+                  className="text-white hover:bg-white/20 p-1.5 rounded transition-colors"
+                  title="Zoom In"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                  </svg>
+                </button>
+              </div>
+              <button
+                onClick={handleClosePreview}
+                className="text-white hover:text-blue-100 transition-colors p-2 hover:bg-white/10 rounded-lg"
+                aria-label="Close preview"
+              >
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Preview Content */}
+            <div className="flex-1 overflow-auto p-4 sm:p-8 bg-gray-100 flex items-start justify-center min-h-0">
+              <div 
+                className="bg-white shadow-2xl rounded-lg overflow-visible"
+                style={{
+                  maxWidth: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                  padding: '20px'
+                }}
+              >
+                <div 
+                  className="preview-wrapper"
+                  style={{
+                    transform: `scale(${previewScale})`,
+                    transformOrigin: 'top center',
+                    width: '210mm',
+                    minHeight: '297mm',
+                    margin: '0 auto',
+                    transition: 'transform 0.2s ease',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                  }}
+                >
+                  {(() => {
+                    const TemplateComponent = templateComponents[previewTemplate];
+                    const previewData = getPreviewData(previewTemplate);
+                    return TemplateComponent ? (
+                      <TemplateComponent data={previewData} />
+                    ) : (
+                      <div className="p-8 text-center text-gray-500">
+                        Template preview not available
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 sm:p-6 border-t border-gray-200 bg-white">
+              <button
+                onClick={handleClosePreview}
+                className="w-full sm:w-auto px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Close Preview
+              </button>
+              <button
+                onClick={() => handleUseFromPreview(previewTemplate)}
+                className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
+              >
+                <span>Use This Template</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
