@@ -664,39 +664,27 @@ const Templates = () => {
             {/* Preview Content */}
             <div className="flex-1 overflow-auto p-4 sm:p-8 bg-gray-100 flex items-start justify-center min-h-0">
               <div 
-                className="bg-white shadow-2xl rounded-lg overflow-visible"
+                className="bg-white shadow-2xl rounded-lg"
                 style={{
-                  maxWidth: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'flex-start',
-                  padding: '20px'
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: 'top center',
+                  width: '210mm',
+                  minHeight: '297mm',
+                  margin: '0 auto',
+                  transition: 'transform 0.2s ease'
                 }}
               >
-                <div 
-                  className="preview-wrapper"
-                  style={{
-                    transform: `scale(${previewScale})`,
-                    transformOrigin: 'top center',
-                    width: '210mm',
-                    minHeight: '297mm',
-                    margin: '0 auto',
-                    transition: 'transform 0.2s ease',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                  }}
-                >
-                  {(() => {
-                    const TemplateComponent = templateComponents[previewTemplate];
-                    const previewData = getPreviewData(previewTemplate);
-                    return TemplateComponent ? (
-                      <TemplateComponent data={previewData} />
-                    ) : (
-                      <div className="p-8 text-center text-gray-500">
-                        Template preview not available
-                      </div>
-                    );
-                  })()}
-                </div>
+                {(() => {
+                  const TemplateComponent = templateComponents[previewTemplate];
+                  const previewData = getPreviewData(previewTemplate);
+                  return TemplateComponent ? (
+                    <TemplateComponent data={previewData} />
+                  ) : (
+                    <div className="p-8 text-center text-gray-500">
+                      Template preview not available
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
