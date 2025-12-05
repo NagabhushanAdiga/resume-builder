@@ -37,7 +37,7 @@ function App() {
                 <ResumePreview />
               </PrivateRoute>
             } />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/templates" replace />} />
           </Routes>
         </Router>
       </ResumeProvider>
