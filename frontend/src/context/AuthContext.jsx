@@ -75,56 +75,58 @@ export const AuthProvider = ({ children }) => {
     return { success: true }
   }
 
-  const login = async (email, password) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // First check static users
-    const staticUser = STATIC_USERS.find(u => u.email === email && u.password === password)
-    
-    if (staticUser) {
-      const userData = {
-        _id: staticUser._id,
-        name: staticUser.name,
-        email: staticUser.email
-      }
-      localStorage.setItem('user', JSON.stringify(userData))
-      setUser(userData)
-      return { success: true }
-    }
-    
-    // Then check localStorage users
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
-    const foundUser = users.find(u => u.email === email && u.password === password)
-    
-    if (foundUser) {
-      const userData = {
-        _id: foundUser._id,
-        name: foundUser.name,
-        email: foundUser.email
-      }
-      localStorage.setItem('user', JSON.stringify(userData))
-      setUser(userData)
-      return { success: true }
-    } else {
-      return {
-        success: false,
-        message: 'Invalid credentials'
-      }
-    }
-  }
+  // COMMENTED OUT: Login feature - uncomment when needed
+  // const login = async (email, password) => {
+  //   // Simulate API call
+  //   await new Promise(resolve => setTimeout(resolve, 500))
+  //   
+  //   // First check static users
+  //   const staticUser = STATIC_USERS.find(u => u.email === email && u.password === password)
+  //   
+  //   if (staticUser) {
+  //     const userData = {
+  //       _id: staticUser._id,
+  //       name: staticUser.name,
+  //       email: staticUser.email
+  //     }
+  //     localStorage.setItem('user', JSON.stringify(userData))
+  //     setUser(userData)
+  //     return { success: true }
+  //   }
+  //   
+  //   // Then check localStorage users
+  //   const users = JSON.parse(localStorage.getItem('users') || '[]')
+  //   const foundUser = users.find(u => u.email === email && u.password === password)
+  //   
+  //   if (foundUser) {
+  //     const userData = {
+  //       _id: foundUser._id,
+  //       name: foundUser.name,
+  //       email: foundUser.email
+  //     }
+  //     localStorage.setItem('user', JSON.stringify(userData))
+  //     setUser(userData)
+  //     return { success: true }
+  //   } else {
+  //     return {
+  //       success: false,
+  //       message: 'Invalid credentials'
+  //     }
+  //   }
+  // }
 
-  const logout = () => {
-    localStorage.removeItem('user')
-    setUser(null)
-  }
+  // COMMENTED OUT: Logout feature - uncomment when needed
+  // const logout = () => {
+  //   localStorage.removeItem('user')
+  //   setUser(null)
+  // }
 
   const value = {
     user,
     loading,
     register,
-    login,
-    logout,
+    // login, // COMMENTED OUT: Login feature
+    // logout, // COMMENTED OUT: Logout feature
     isAuthenticated: !!user
   }
 

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext'
 import { ResumeProvider } from './context/ResumeContext'
 import PrivateRoute from './components/PrivateRoute'
-import Login from './pages/Login'
+// import Login from './pages/Login' // COMMENTED OUT: Login feature
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Templates from './pages/Templates'
@@ -15,7 +15,8 @@ function App() {
       <ResumeProvider>
         <Router>
           <Routes>
-            <Route path="/login" element={<Login />} />
+            {/* COMMENTED OUT: Login route - uncomment when login feature is enabled */}
+            {/* <Route path="/login" element={<Login />} /> */}
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={
               <PrivateRoute>

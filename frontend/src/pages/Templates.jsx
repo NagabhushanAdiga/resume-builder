@@ -1,7 +1,11 @@
+// COMMENTED OUT: useRef was used for upload resume feature
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useResume } from '../context/ResumeContext'
 import { defaultResumeData, sampleResumes } from '../data/mockData'
+// COMMENTED OUT: Upload resume feature
+// import { parseResumeFile } from '../utils/resumeParser'
 
 // Import all templates
 import ModernTemplate from '../components/templates/ModernTemplate'
@@ -49,7 +53,8 @@ const templateComponents = {
 }
 
 const Templates = () => {
-  const { user, logout } = useAuth()
+  const { user /* , logout */ } = useAuth() // COMMENTED OUT: logout feature
+  const { createResume } = useResume()
   const navigate = useNavigate()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
@@ -57,6 +62,11 @@ const Templates = () => {
   const [templateColors, setTemplateColors] = useState({})
   const [previewTemplate, setPreviewTemplate] = useState(null)
   const [previewScale, setPreviewScale] = useState(0.75)
+  // COMMENTED OUT: Upload resume feature
+  // const [uploading, setUploading] = useState(false)
+  // const [uploadError, setUploadError] = useState('')
+  // const fileInputRef = useRef(null)
+  // const [isDragging, setIsDragging] = useState(false)
 
   useEffect(() => {
     const updateScale = () => {
@@ -317,6 +327,89 @@ const Templates = () => {
     setPreviewTemplate(null)
   }
 
+  // COMMENTED OUT: Upload resume feature
+  // const handleFileUpload = async (file) => {
+  //   if (!file) return
+
+  //   // Validate file type
+  //   const validTypes = [
+  //     'application/pdf',
+  //     'application/msword',
+  //     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  //   ]
+  //   const validExtensions = ['.pdf', '.doc', '.docx']
+  //   const fileName = file.name.toLowerCase()
+    
+  //   if (!validTypes.includes(file.type) && !validExtensions.some(ext => fileName.endsWith(ext))) {
+  //     setUploadError('Please upload a valid PDF or Word document (.pdf, .doc, .docx)')
+  //     return
+  //   }
+
+  //   setUploading(true)
+  //   setUploadError('')
+
+  //   try {
+  //     // Parse the resume file
+  //     const extractedData = await parseResumeFile(file)
+      
+  //     // Create resume with extracted data
+  //     const resumeData = {
+  //       title: file.name.replace(/\.[^/.]+$/, '') || 'Uploaded Resume',
+  //       template: 'modern',
+  //       colors: {
+  //         primary: '#3B82F6',
+  //         text: '#1F2937',
+  //         secondary: '#6B7280'
+  //       },
+  //       ...extractedData
+  //     }
+
+  //     const result = await createResume(resumeData)
+      
+  //     if (result.success) {
+  //       // Navigate to editor with the new resume
+  //       navigate(`/editor/${result.data._id}`)
+  //     } else {
+  //       setUploadError('Failed to create resume. Please try again.')
+  //     }
+  //   } catch (error) {
+  //     console.error('Error uploading resume:', error)
+  //     setUploadError(error.message || 'Failed to parse resume. Please try again or start from scratch.')
+  //   } finally {
+  //     setUploading(false)
+  //   }
+  // }
+
+  // const handleFileSelect = (e) => {
+  //   const file = e.target.files?.[0]
+  //   if (file) {
+  //     handleFileUpload(file)
+  //   }
+  // }
+
+  // const handleDragOver = (e) => {
+  //   e.preventDefault()
+  //   e.stopPropagation()
+  //   setIsDragging(true)
+  // }
+
+  // const handleDragLeave = (e) => {
+  //   e.preventDefault()
+  //   e.stopPropagation()
+  //   setIsDragging(false)
+  // }
+
+  // const handleDrop = (e) => {
+  //   e.preventDefault()
+  //   e.stopPropagation()
+  //   setIsDragging(false)
+
+  //   const file = e.dataTransfer.files?.[0]
+  //   if (file) {
+  //     handleFileUpload(file)
+  //   }
+  // }
+
   // Get sample data for preview (so users can see how template looks with content)
   const getPreviewData = (templateId) => {
     const sampleData = sampleResumes[0]
@@ -357,16 +450,6 @@ const Templates = () => {
                 </div>
               </div>
               
-              <div className="hidden lg:flex h-10 w-px bg-white/20"></div>
-              
-              <div className="hidden lg:flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span className="text-sm font-medium text-white">
-                  Welcome, <span className="font-bold">{user?.name}</span> 👋
-                </span>
-              </div>
             </div>
 
             {/* Right Side - Actions */}
@@ -380,7 +463,8 @@ const Templates = () => {
                 </svg>
                 <span className="hidden xs:inline">My Resumes</span>
               </button>
-              <div className="h-6 sm:h-8 w-px bg-white/20 hidden sm:block"></div>
+              {/* COMMENTED OUT: Logout button - uncomment when needed */}
+              {/* <div className="h-6 sm:h-8 w-px bg-white/20 hidden sm:block"></div>
               <button
                 onClick={logout}
                 className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 backdrop-blur-sm rounded-lg transition-all group border border-transparent hover:border-white/20"
@@ -389,7 +473,7 @@ const Templates = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 <span className="hidden xs:inline">Logout</span>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -397,10 +481,11 @@ const Templates = () => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto w-full px-6 py-4 sm:py-6 lg:py-8">
-        {/* Start with Blank Section */}
-        <div className="mb-6 sm:mb-8">
+        {/* Start Options Section */}
+        <div className="mb-6 sm:mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {/* Start from Scratch */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-6 sm:p-8 text-white">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col items-start gap-4">
               <div className="flex-1">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2">Start from Scratch</h2>
                 <p className="text-blue-100 text-base sm:text-lg">
@@ -409,7 +494,7 @@ const Templates = () => {
               </div>
               <button
                 onClick={() => navigate('/editor')}
-                className="w-full sm:w-auto bg-white text-blue-600 px-8 py-3 rounded-lg hover:bg-blue-50 transition-colors font-bold text-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
+                className="w-full bg-white text-blue-600 px-8 py-3 rounded-lg hover:bg-blue-50 transition-colors font-bold text-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -418,6 +503,59 @@ const Templates = () => {
               </button>
             </div>
           </div>
+
+          {/* COMMENTED OUT: Upload Existing Resume */}
+          {/* <div 
+            className={`bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-lg p-6 sm:p-8 text-white border-2 transition-all ${
+              isDragging ? 'border-white border-dashed scale-105' : 'border-transparent'
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="flex flex-col items-start gap-4">
+              <div className="flex-1">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2">Upload Existing Resume</h2>
+                <p className="text-purple-100 text-base sm:text-lg">
+                  Upload your existing PDF or Word resume and we'll extract the information for you
+                </p>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full bg-white text-purple-600 px-8 py-3 rounded-lg hover:bg-purple-50 transition-colors font-bold text-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {uploading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <span>Upload Resume</span>
+                  </>
+                )}
+              </button>
+              {uploadError && (
+                <div className="w-full mt-2 p-3 bg-red-500/20 border border-red-300 rounded-lg text-sm text-red-100">
+                  {uploadError}
+                </div>
+              )}
+              <p className="text-xs text-purple-200 mt-2">
+                Supports PDF, DOC, and DOCX files. You can also drag and drop a file here.
+              </p>
+            </div>
+          </div> */}
         </div>
 
         {/* Divider */}
@@ -459,7 +597,7 @@ const Templates = () => {
                   }`}
                 >
                   <span className="mr-1 sm:mr-2">{category.icon}</span>
-                  <span className="hidden xs:inline">{category.label}</span>
+                  <span>{category.label}</span>
                 </button>
               ))}
             </div>

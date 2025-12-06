@@ -60,6 +60,8 @@ const ResumePreview = () => {
   const [downloading, setDownloading] = useState(false)
   const [exportType, setExportType] = useState('pdf') // 'pdf' or 'word'
   const [pages, setPages] = useState([])
+  const [showFileNameModal, setShowFileNameModal] = useState(false)
+  const [fileName, setFileName] = useState('')
   const resumeRef = useRef()
   const contentRef = useRef()
 
@@ -149,7 +151,7 @@ const ResumePreview = () => {
     }
   }, [currentResume])
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = async (customFileName) => {
     if (!currentResume || !contentRef.current) return
 
     setDownloading(true)
@@ -226,8 +228,10 @@ const ResumePreview = () => {
         pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, imgHeight, undefined, 'FAST')
       }
       
-      const fileName = currentResume?.title || 'resume'
-      pdf.save(`${fileName}.pdf`)
+      const finalFileName = customFileName || currentResume?.title || 'resume'
+      // Sanitize filename to remove invalid characters
+      const sanitizedFileName = finalFileName.replace(/[<>:"/\\|?*]/g, '').trim() || 'resume'
+      pdf.save(`${sanitizedFileName}.pdf`)
     } catch (error) {
       console.error('Error generating PDF:', error)
       alert(`Error generating PDF: ${error.message}. Please try again.`)
@@ -236,7 +240,7 @@ const ResumePreview = () => {
     }
   }
 
-  const handleDownloadWord = async () => {
+  const handleDownloadWord = async (customFileName) => {
     if (!currentResume) return
 
     setDownloading(true)
@@ -271,7 +275,10 @@ const ResumePreview = () => {
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `${currentResume.title || 'resume'}.doc`
+      const finalFileName = customFileName || currentResume.title || 'resume'
+      // Sanitize filename to remove invalid characters
+      const sanitizedFileName = finalFileName.replace(/[<>:"/\\|?*]/g, '').trim() || 'resume'
+      link.download = `${sanitizedFileName}.doc`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -445,16 +452,6 @@ const ResumePreview = () => {
                 </h1>
               </div>
               
-              <div className="hidden lg:flex h-10 w-px bg-white/20"></div>
-              
-              <div className="hidden lg:flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span className="text-sm font-medium text-white">
-                  Welcome, <span className="font-bold">{user?.name}</span> 👋
-                </span>
-              </div>
             </div>
 
             {/* Right Side - Actions */}
@@ -503,7 +500,11 @@ const ResumePreview = () => {
               </div>
 
               <button
-                onClick={exportType === 'pdf' ? handleDownloadPDF : handleDownloadWord}
+                onClick={() => {
+                  const defaultName = currentResume?.title || 'resume'
+                  setFileName(defaultName)
+                  setShowFileNameModal(true)
+                }}
                 disabled={downloading}
                 className="px-4 sm:px-6 py-2 sm:py-2.5 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 font-medium text-xs sm:text-sm shadow-lg"
               >
@@ -599,6 +600,74 @@ const ResumePreview = () => {
           )}
         </div>
       </main>
+
+      {/* File Name Modal */}
+      {showFileNameModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Enter File Name</h3>
+                <p className="text-sm text-gray-500">Choose a name for your {exportType.toUpperCase()} file</p>
+              </div>
+            </div>
+            <div className="mb-6">
+              <label htmlFor="fileName" className="block text-sm font-semibold text-gray-700 mb-2">
+                File Name
+              </label>
+              <input
+                id="fileName"
+                type="text"
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    setShowFileNameModal(false)
+                    if (exportType === 'pdf') {
+                      handleDownloadPDF(fileName)
+                    } else {
+                      handleDownloadWord(fileName)
+                    }
+                  }
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-base"
+                placeholder="Enter file name"
+                autoFocus
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                File will be saved as: <span className="font-medium">{fileName || 'resume'}.{exportType === 'pdf' ? 'pdf' : 'doc'}</span>
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowFileNameModal(false)}
+                className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowFileNameModal(false)
+                  if (exportType === 'pdf') {
+                    handleDownloadPDF(fileName)
+                  } else {
+                    handleDownloadWord(fileName)
+                  }
+                }}
+                className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-lg"
+              >
+                Download {exportType.toUpperCase()}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

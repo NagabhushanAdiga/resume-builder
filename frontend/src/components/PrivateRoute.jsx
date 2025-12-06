@@ -12,7 +12,9 @@ const PrivateRoute = ({ children }) => {
     )
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" />
+  // COMMENTED OUT: Authentication check - uncomment when login feature is enabled
+  // return isAuthenticated ? children : <Navigate to="/login" />
+  return children // Allow access without authentication for now
 }
 
 export default PrivateRoute

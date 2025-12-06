@@ -1,15 +1,22 @@
+// COMMENTED OUT: useRef was used for upload resume feature
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useResume } from '../context/ResumeContext'
+// COMMENTED OUT: Upload resume feature
+// import { parseResumeFile } from '../utils/resumeParser'
 
 const Dashboard = () => {
-  const { user, logout } = useAuth()
-  const { resumes, fetchResumes, deleteResume, duplicateResume, loading } = useResume()
+  const { user /* , logout */ } = useAuth() // COMMENTED OUT: logout feature
+  const { resumes, fetchResumes, deleteResume, duplicateResume, createResume, loading } = useResume()
   const navigate = useNavigate()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  // const [showLogoutConfirm, setShowLogoutConfirm] = useState(false) // COMMENTED OUT: Logout feature
   const [copying, setCopying] = useState(null)
+  // COMMENTED OUT: Upload resume feature
+  // const [uploading, setUploading] = useState(false)
+  // const [uploadError, setUploadError] = useState('')
+  // const fileInputRef = useRef(null)
 
   useEffect(() => {
     fetchResumes()
@@ -43,6 +50,67 @@ const Dashboard = () => {
     }
   }
 
+  // COMMENTED OUT: Upload resume feature
+  // const handleFileUpload = async (file) => {
+  //   if (!file) return
+
+  //   // Validate file type
+  //   const validTypes = [
+  //     'application/pdf',
+  //     'application/msword',
+  //     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  //   ]
+  //   const validExtensions = ['.pdf', '.doc', '.docx']
+  //   const fileName = file.name.toLowerCase()
+    
+  //   if (!validTypes.includes(file.type) && !validExtensions.some(ext => fileName.endsWith(ext))) {
+  //     setUploadError('Please upload a valid PDF or Word document (.pdf, .doc, .docx)')
+  //     return
+  //   }
+
+  //   setUploading(true)
+  //   setUploadError('')
+
+  //   try {
+  //     // Parse the resume file
+  //     const extractedData = await parseResumeFile(file)
+      
+  //     // Create resume with extracted data
+  //     const resumeData = {
+  //       title: file.name.replace(/\.[^/.]+$/, '') || 'Uploaded Resume',
+  //       template: 'modern',
+  //       colors: {
+  //         primary: '#3B82F6',
+  //         text: '#1F2937',
+  //         secondary: '#6B7280'
+  //       },
+  //       ...extractedData
+  //     }
+
+  //     const result = await createResume(resumeData)
+      
+  //     if (result.success) {
+  //       // Refresh resumes list and navigate to editor
+  //       await fetchResumes()
+  //       navigate(`/editor/${result.data._id}`)
+  //     } else {
+  //       setUploadError('Failed to create resume. Please try again.')
+  //     }
+  //   } catch (error) {
+  //     console.error('Error uploading resume:', error)
+  //     setUploadError(error.message || 'Failed to parse resume. Please try again or start from scratch.')
+  //   } finally {
+  //     setUploading(false)
+  //   }
+  // }
+
+  // const handleFileSelect = (e) => {
+  //   const file = e.target.files?.[0]
+  //   if (file) {
+  //     handleFileUpload(file)
+  //   }
+  // }
+
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
       {/* Header */}
@@ -65,16 +133,6 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              <div className="hidden lg:flex h-10 w-px bg-white/20"></div>
-              
-              <div className="hidden lg:flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span className="text-sm font-medium text-white">
-                  Welcome back, <span className="font-bold">{user?.name}</span> 👋
-                </span>
-              </div>
             </div>
 
             {/* Right Side - Actions */}
@@ -91,7 +149,8 @@ const Dashboard = () => {
               
               <div className="h-6 sm:h-8 w-px bg-white/20 hidden sm:block"></div>
               
-              <button
+              {/* COMMENTED OUT: Logout button - uncomment when needed */}
+              {/* <button
                 onClick={() => setShowLogoutConfirm(true)}
                 className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 backdrop-blur-sm rounded-lg transition-all group border border-transparent hover:border-white/20"
               >
@@ -99,7 +158,7 @@ const Dashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 <span className="hidden xs:inline">Logout</span>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -126,6 +185,40 @@ const Dashboard = () => {
             </svg>
             Quick Start (Blank)
           </button>
+          {/* COMMENTED OUT: Upload resume feature */}
+          {/* <div className="relative">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="w-full sm:w-auto bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {uploading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Upload Resume
+                </>
+              )}
+            </button>
+          </div>
+          {uploadError && (
+            <div className="w-full sm:w-auto px-4 py-2 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              {uploadError}
+            </div>
+          )} */}
         </div>
 
         {loading ? (
@@ -282,8 +375,8 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Logout Confirmation Modal */}
-      {showLogoutConfirm && (
+      {/* COMMENTED OUT: Logout Confirmation Modal - uncomment when needed */}
+      {/* {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-4 sm:p-6 max-w-sm w-full shadow-2xl">
             <div className="flex items-center gap-3 mb-3 sm:mb-4">
@@ -319,7 +412,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   )
 }

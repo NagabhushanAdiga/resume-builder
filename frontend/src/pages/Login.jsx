@@ -7,22 +7,27 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
+  // const { login } = useAuth() // COMMENTED OUT: Login feature
   const navigate = useNavigate()
 
+  // COMMENTED OUT: Login functionality - uncomment when needed
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
-    const result = await login(email, password)
-    setLoading(false)
+    // const result = await login(email, password)
+    // setLoading(false)
 
-    if (result.success) {
-      navigate('/templates')
-    } else {
-      setError(result.message)
-    }
+    // if (result.success) {
+    //   navigate('/templates')
+    // } else {
+    //   setError(result.message)
+    // }
+    
+    // Temporarily disabled - navigate directly
+    setLoading(false)
+    navigate('/templates')
   }
 
   return (
